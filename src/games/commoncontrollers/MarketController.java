@@ -1,4 +1,4 @@
-package games.monstersandheroes.contoller;
+package games.commoncontrollers;
 
 import core.model.Party;
 import core.model.entity.Hero;
@@ -18,6 +18,7 @@ import java.util.Scanner;
 public class MarketController {
     private Scanner scanner;
     private InventoryController inventoryController; // Needed for safe removal
+    private Market shop;
 
     public MarketController(Scanner scanner, InventoryController invController) {
         this.scanner = scanner;
@@ -25,7 +26,6 @@ public class MarketController {
     }
 
     public void enterMarket(Market market, Party party) {
-        System.out.println("\n--- Welcome to the Market! ---");
         boolean shopping = true;
 
         while (shopping) {
@@ -48,10 +48,10 @@ public class MarketController {
                 scanner.next();
             }
         }
-        System.out.println("Leaving market...");
     }
 
-    private void handleShopper(Hero hero, Market market) {
+    public void handleShopper(Hero hero, Market market) {
+        System.out.println("\n--- Welcome to the Market! ---");
         boolean active = true;
         while (active) {
             System.out.println("\n" + hero.getName() + " is at the counter.");
@@ -62,6 +62,7 @@ public class MarketController {
             if (choice.equals("1")) buyLoop(hero, market);
             else if (choice.equals("2")) sellLoop(hero);
             else if (choice.equals("0")) active = false;
+            System.out.println("Leaving market...");
         }
     }
 
@@ -106,6 +107,7 @@ public class MarketController {
                     hero.decreaseGold(item.getPrice());
                     hero.addItem(item);
                     System.out.println("Purchase successful: " + item.getName());
+                    wares.remove(item);
                 }
             }
         } else scanner.next();
@@ -128,6 +130,7 @@ public class MarketController {
                 // Use InventoryController to safely unequip if needed
                 inventoryController.removeItemSafely(hero, item);
                 System.out.println("Sold " + item.getName());
+                shop.getItems().add(item);
             }
         } else scanner.next();
     }

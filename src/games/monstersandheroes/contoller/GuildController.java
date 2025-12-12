@@ -3,6 +3,7 @@ package games.monstersandheroes.contoller;
 import core.model.Party;
 import core.model.entity.Hero;
 import core.util.GameConfig;
+import games.commoncontrollers.HeroController;
 
 import java.util.ArrayList;
 import java.util.List;

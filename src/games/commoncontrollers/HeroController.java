@@ -1,6 +1,7 @@
-package games.monstersandheroes.contoller;
+package games.commoncontrollers;
 
 import core.model.entity.Hero;
+import core.model.item.Weapon;
 import core.util.Colors;
 import core.util.GameConfig;
 
@@ -37,8 +38,8 @@ public class HeroController {
      * Calculates attack damage based on Hero Stats + Gear.
      * Formula: (Strength + WeaponDmg) * 0.05
      */
-    public double calculateDamage(Hero hero) {
-        double weaponDamage = (hero.getEquippedWeapon() != null) ? hero.getEquippedWeapon().getDamage() : 0;
+    public double calculateDamage(Hero hero, Weapon weapon) {
+        double weaponDamage = (weapon != null) ? weapon.getDamage() : 0;
         return (hero.getStrength() + weaponDamage) * GameConfig.DAMAGE_SCALE;
     }
 

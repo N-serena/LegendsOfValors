@@ -4,33 +4,41 @@ import core.model.Party;
 import core.model.entity.*;
 import core.model.item.Item;
 import core.model.item.Spell;
+import core.model.item.Weapon;
 import core.util.Colors;
 import core.util.GameConfig;
+import games.commoncontrollers.BattleController;
+import games.commoncontrollers.HeroController;
+import games.commoncontrollers.actions.CastSpell;
+import games.commoncontrollers.actions.Attack;
+import games.commoncontrollers.InputHandler;
+import games.commoncontrollers.InventoryController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Handles the Turn-Based Combat State.
  * delegates Inventory actions to InventoryController.
- * * @author Serena N.
- * @version 3.0 (Refactored)
+ * * @author Serena N., Chris Mary Benson
+ * @version 3.0 (Revised)
  */
-public class BattleController {
-    private Scanner scanner;
-    private Party party;
+
+public class MonstersAndHeroesBattleController extends BattleController {
+    private InputHandler inputHandler;
     private List<Monster> monsters;
     private int roundCounter;
     private boolean battleActive;
 
     // Sub-Controllers
-    private InventoryController inventoryController;
     private HeroController heroController;
 
     // Constructor accepts Scanner to share input stream
-    public BattleController(Scanner scanner, InventoryController inventoryController, HeroController heroController) {
-        this.scanner = scanner;
-        this.inventoryController = new InventoryController(scanner);
+    public MonstersAndHeroesBattleController(InventoryController inventoryController, HeroController heroController) {
         this.heroController = new HeroController();
+        this.inputHandler = new InputHandler();
     }
 
     public void startBattle(Party party, List<Monster> allPossibleMonsters) {
@@ -81,8 +89,9 @@ public class BattleController {
 
         // Hero Turns
         for (Hero hero : party.getHeroes()) {
-            if (hero.isFainted()) continue;
+            System.out.println(battleActive);
             if (!battleActive) break;
+            if (hero.isFainted()) continue;
             heroTurn(hero);
             checkWinCondition();
         }
@@ -109,8 +118,8 @@ public class BattleController {
             for (Hero h : party.getHeroes()) {
                 if (!h.isFainted()) {
                     // Calculate amounts based on Config
-                    double hpGain = h.getHp() * (GameConfig.REGEN_RATE - 1.0); // e.g. 100 * 0.1 = 10
-                    double mpGain = h.getMana() * (GameConfig.REGEN_RATE - 1.0);
+                    double hpGain = h.getHp() * (core.util.GameConfig.REGEN_RATE - 1.0); // e.g. 100 * 0.1 = 10
+                    double mpGain = h.getMana() * (core.util.GameConfig.REGEN_RATE - 1.0);
                     // Apply updates
                     h.setHp(h.getHp() + hpGain);
                     h.setMana(h.getMana() + mpGain);
@@ -151,10 +160,9 @@ public class BattleController {
             System.out.println("  4. Equip Weapon/Armor");
             System.out.println("  5. View Hero Stats");
             System.out.println("  6. View Monster Stats");
-            System.out.println("  Q. Quit Game");
-            System.out.print("> ");
+            System.out.println("  Q. Forfeit Battle");
 
-            String input = scanner.next().toUpperCase();
+            String input = inputHandler.getIntInput(1, 6);
 
             switch (input) {
                 case "1": validAction = attackMonster(hero); break;
@@ -163,7 +171,7 @@ public class BattleController {
                 case "4": validAction = inventoryController.openEquipMenu(hero); break;
                 case "5": showHeroStats(); break;
                 case "6": showMonsterStats(); break;
-                case "Q": System.exit(0); break;
+                case "Q": battleActive = false; validAction = true; break;
                 default: System.out.println("Invalid action.");
             }
         }
@@ -171,61 +179,31 @@ public class BattleController {
 
     private boolean attackMonster(Hero hero) {
         Monster target = selectMonster();
-        if (target == null) return false;
 
-        if (Math.random() < target.getDodgeChance() * 0.01) {
-            System.out.println(target.getName() + " dodged the attack from " + hero.getName() + "!");
-        } else {
-            double damage = heroController.calculateDamage(hero);
-            double actualDmg = Math.max(0, damage - (target.getDefense() * 0.02));
-            target.takeDamage(actualDmg);
-            System.out.println(hero.getName() + " dealt " + (int)actualDmg + " damages to " + target.getName() + ".");
-        }
+        Weapon w = (Weapon) selectAttackItem(hero);
+
+        if (w == null) {return false;}
+
+        currentFightStrategy = new Attack();
+
+        currentFightStrategy.performFightAction(hero, target, w);
+
         return true;
     }
 
     private boolean castSpell(Hero hero) {
         // 1. Filter Spells (Keep this UI logic here or move to InventoryController helper)
-        List<Spell> spells = new ArrayList<>();
-        for (Item i : hero.getInventory()) if (i instanceof Spell) spells.add((Spell) i);
-
-        if (spells.isEmpty()) { System.out.println("No spells."); return false; }
-
-        for (int i = 0; i < spells.size(); i++) {
-            System.out.printf("%d. %s (Mana: %.0f)\n", (i+1), spells.get(i).getName(), spells.get(i).getManaCost());
-        }
-        System.out.print("Select Spell (0 cancel): ");
-
-        if(!scanner.hasNextInt()) { scanner.next(); return false; }
-        int idx = scanner.nextInt();
-        if (idx <= 0 || idx > spells.size()) return false;
-
-        Spell s = spells.get(idx-1);
-
-        // 2. Check Requirements (Model Query)
-        if (hero.getMana() < s.getManaCost()) {
-            System.out.println("Not enough Mana.");
-            return false;
-        }
 
         Monster target = selectMonster();
-        if (target == null) return false;
 
-        // 3. Execute (Update Model)
-        hero.setMana(hero.getMana() - s.getManaCost());
+        Spell s = (Spell) selectSpellItem(hero);
 
-        // --- DELEGATE MATH TO HERO CONTROLLER ---
-        double damage = heroController.calculateSpellDamage(hero, s);
+        if (s == null) {return false;}
 
-        target.takeDamage(damage);
-        System.out.println("Cast " + s.getName() + " for " + (int)damage + " damage.");
+        currentFightStrategy = new CastSpell();
 
-        // Spell Effects (Logic stays here or moves to Spell class strategy)
-        if (s.getType() == Spell.SpellType.ICE) target.setBaseDamage(target.getBaseDamage() * 0.9);
-        if (s.getType() == Spell.SpellType.FIRE) target.setDefense(target.getDefense() * 0.9);
-        if (s.getType() == Spell.SpellType.LIGHTNING) target.setDodgeChance(target.getDodgeChance() * 0.9);
+        currentFightStrategy.performFightAction(hero, target, s);
 
-        // --- DELEGATE REMOVAL TO INVENTORY CONTROLLER ---
         inventoryController.consumeItem(hero, s);
 
         return true;
@@ -239,9 +217,10 @@ public class BattleController {
         if(live.isEmpty()) return null;
 
         for(int i=0; i<live.size(); i++) System.out.printf("%d. %s (HP: %.0f)\n", (i+1), live.get(i).getName(), live.get(i).getHp());
-        if(!scanner.hasNextInt()) { scanner.next(); return null; }
-        int choice = scanner.nextInt();
-        return (choice > 0 && choice <= live.size()) ? live.get(choice-1) : null;
+
+        int choice = inputHandler.getIntegerInput(1, live.size());
+
+        return live.get(choice - 1);
     }
 
     private void monsterTurn(Monster monster) {
@@ -251,28 +230,9 @@ public class BattleController {
 
         Hero target = targets.get(new Random().nextInt(targets.size()));
 
-        //Use HeroController to calculate the chance
-        double dodgeChance = heroController.calculateDodgeChance(target);
+        currentFightStrategy = new Attack();
 
-        if (Math.random() < dodgeChance) {
-            System.out.println(monster.getName() + " attacked " + target.getName()
-                    + " -> BUT MISSED! " + target.getName() + " dodged the attack!");
-        } else {
-            double incomingDmg = monster.getBaseDamage();
-
-            // Armor reduction logic
-            // (This logic is simple enough to stay here, or you could move 'calculateDefense' to HeroController too)
-            double defense = (target.getEquippedArmor() != null) ? target.getEquippedArmor().getDamageReduction() : 0;
-            double actualDmg = Math.max(0, incomingDmg - defense);
-
-            target.takeDamage(actualDmg);
-
-            if (actualDmg == 0 && defense > 0) {
-                System.out.println(monster.getName() + " attacked " + target.getName() + " -> BLOCKED by Armor!");
-            } else {
-                System.out.println(monster.getName() + " hit " + target.getName() + " for " + (int)actualDmg + " damages.");
-            }
-        }
+        currentFightStrategy.performFightAction(monster, target, null);
     }
 
     private void printRoundStatus() {
@@ -316,21 +276,27 @@ public class BattleController {
             double armorDef = (h.getEquippedArmor() != null) ? h.getEquippedArmor().getDamageReduction() : 0;
 
             // Calculate Total Damage (Strength + Weapon) using the Hero's logic method
-            double totalDmg = heroController.calculateDamage(h);
+            //double totalDmg = heroController.calculateDamage(h);
 
             // Calculate Dodge %
             double dodgeChance = heroController.calculateDodgeChance(h) * 100;
 
-            System.out.printf("     Damage:  %-5.0f (Str + Weapon)\n", totalDmg);
+            //System.out.printf("     Damage:  %-5.0f (Str + Weapon)\n", totalDmg);
             System.out.printf("     Defense: %-5.0f (Armor)\n", armorDef);
             System.out.printf("     Dodge:   %-5.0f%%\n", dodgeChance);
 
             // Gear
             System.out.println("    Equipped Gear");
-            if (h.getEquippedWeapon() != null) {
-                System.out.printf("     Weapon: %s (Val: %.0f)\n", h.getEquippedWeapon().getName(), h.getEquippedWeapon().getDamage());
+            if (!h.getEquippedWeapon().isEmpty()) {
+                for (Weapon weapon : h.getEquippedWeapon()) {
+                    System.out.printf("     Weapon: %s (Val: %.0f)\n", weapon.getName(), weapon.getDamage());}
+            }
+            else {System.out.println("     Weapon: None");}
+
+            if (h.getEquippedArmor() != null) {
+                System.out.printf("     Armor:  %s (Val: %.0f)\n", h.getEquippedArmor().getName(), h.getEquippedArmor().getDamageReduction());
             } else {
-                System.out.println("     Weapon: None");
+                System.out.println("     Armor:  None");
             }
 
             if (h.getEquippedArmor() != null) {
