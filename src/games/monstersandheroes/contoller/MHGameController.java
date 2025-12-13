@@ -33,7 +33,6 @@ import java.util.Scanner;
  */
 public class MHGameController extends GameController implements GameEngine {
     private Scanner scanner;
-    private Party party;
     private Board board;
     private GameView view;
 
@@ -45,7 +44,6 @@ public class MHGameController extends GameController implements GameEngine {
 
     public MHGameController() {
         this.scanner = new Scanner(System.in);
-        this.party = new Party();
         this.allHeroes = new ArrayList<>();
         this.allMonsters = new ArrayList<>();
         this.allItems = new ArrayList<>();

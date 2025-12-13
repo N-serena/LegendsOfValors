@@ -29,7 +29,6 @@ public class LovGameController extends GameController implements GameEngine {
 
     Scanner scanner;
     LovBoard board;
-    Party party;
     InventoryController inventoryController;
     MarketController marketController;
     PartyController partyController;
@@ -39,7 +38,6 @@ public class LovGameController extends GameController implements GameEngine {
 
     public LovGameController() {
         board = new LovBoard();
-        party = new Party();
     }
 
     @Override
