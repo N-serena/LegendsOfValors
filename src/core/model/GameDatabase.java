@@ -3,6 +3,7 @@ package core.model;
 import core.model.entity.Hero;
 import core.model.entity.Monster;
 import core.model.item.Item;
+import core.model.item.spell.Spell;
 import core.util.GameDataParser;
 
 import java.io.IOException;
@@ -55,9 +56,9 @@ public class GameDatabase {
             allItems.addAll(GameDataParser.parseWeapons("data_files/Weaponry.txt"));
             allItems.addAll(GameDataParser.parseArmor("data_files/Armory.txt"));
             allItems.addAll(GameDataParser.parsePotions("data_files/Potions.txt"));
-            allItems.addAll(GameDataParser.parseSpells("data_files/IceSpells.txt", core.model.item.Spell.SpellType.ICE));
-            allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", core.model.item.Spell.SpellType.FIRE));
-            allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", core.model.item.Spell.SpellType.LIGHTNING));
+            allItems.addAll(GameDataParser.parseSpells("data_files/IceSpells.txt", Spell.SpellType.ICE));
+            allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", Spell.SpellType.FIRE));
+            allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", Spell.SpellType.LIGHTNING));
 
         } catch (IOException e) {
             System.err.println("Critical Error loading files: " + e.getMessage());

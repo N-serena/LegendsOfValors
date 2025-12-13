@@ -32,7 +32,7 @@ public class HeroTurnState implements LovGameState {
             while (!turnComplete) {
                 System.out.println(board.renderColored());
                 System.out.println("\nAction for " + hero.getName() + " (" + hero.getLane() + " Lane):");
-                System.out.println("[W/A/S/D] Move | [T] Teleport | [A] Attack | [R] Recall | [I] Info/Equip | [Q] Quit");
+                System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [R] Recall | [M] Market | [I] Info/Equip | [Q] Quit");
                 System.out.print("> ");
                 String input = scanner.next().toUpperCase();
 
