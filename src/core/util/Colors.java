@@ -34,4 +34,3 @@ public class Colors {
     public static final String BG_BRIGHT_CYAN = "\u001B[106m";
     public static final String BG_BRIGHT_WHITE = "\u001B[107m";
 }
-}

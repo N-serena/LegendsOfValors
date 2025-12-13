@@ -2,8 +2,16 @@ package games.legendsofvalors.controller;
 
 import core.interfaces.GameEngine;
 import games.legendsofvalors.model.ValorHero;
+import games.legendsofvalors.model.ValorMonster;
+import games.legendsofvalors.model.world.LovBoard;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class LovGameController implements GameEngine {
+    private LovBoard board = new LovBoard();
+    private Scanner scanner = new Scanner(System.in);
 
     @Override
     public void startGame() {

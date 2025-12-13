@@ -17,7 +17,7 @@ public class LovCombat {
      * Checks if the target is in the current space or any neighbor (diagonal included).
      * Source: "The attack range is limited to the current space and its neighbors"
      */
-    public boolean isTargetInRange(int heroRow, int heroCol, int targetRow, int targetCol) {
+      public boolean isTargetInRange(int heroRow, int heroCol, int targetRow, int targetCol) {
         int rowDiff = Math.abs(heroRow - targetRow);
         int colDiff = Math.abs(heroCol - targetCol);
 
