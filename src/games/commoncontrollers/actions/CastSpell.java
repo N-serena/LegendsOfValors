@@ -6,8 +6,7 @@ import core.model.entity.Hero;
 import core.model.entity.LivingEntity;
 import core.model.entity.Monster;
 import core.model.item.Item;
-import core.model.item.Spell;
-import core.util.GameConfig;
+import core.model.item.spell.Spell;
 
 /**
  * A type of fight strategy - casting spells
@@ -23,7 +22,7 @@ public class CastSpell implements FightStrategy {
     public void performFightAction(LivingEntity attacker, LivingEntity target, Item item)
     {
         Hero hero = (Hero) attacker;
-        Monster monster = (Monster) target;
+        //Monster monster = (Monster) target;
         Spell spell = (Spell) item;
 
         hero.setMana(hero.getMana() - spell.getManaCost());
@@ -32,11 +31,8 @@ public class CastSpell implements FightStrategy {
         double damage = heroController.calculateSpellDamage(hero, spell);
 
         target.takeDamage(damage);
-        System.out.println("Cast " + spell.getName() + " for " + (int)damage + " damage.");
+        System.out.println("Cast " + spell.getType() + ": " + spell.getName() + " for " + (int)damage + " damage.");
 
-        // Spell Effects (Logic stays here or moves to Spell class strategy)
-        if (spell.getType() == Spell.SpellType.ICE) monster.setBaseDamage(monster.getBaseDamage() * GameConfig.ICESPELLDAMAGE);
-        if (spell.getType() == Spell.SpellType.FIRE) monster.setDefense(monster.getDefense() * GameConfig.FIRESPELLDAMAGE);
-        if (spell.getType() == Spell.SpellType.LIGHTNING) monster.setDodgeChance(monster.getDodgeChance() * GameConfig.LIGHTNINGSPELLDAMAGE);
+        spell.castEffect((Monster) target);
     }
 }

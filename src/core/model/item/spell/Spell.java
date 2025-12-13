@@ -1,11 +1,14 @@
-package core.model.item;
+package core.model.item.spell;
+
+import core.model.entity.Monster;
+import core.model.item.Item;
 
 /**
  * Represents a magical spell item with specific attributes.
  ** @author Serena N
  * @version 1.0
  */
-public class Spell implements Item {
+public abstract class Spell implements Item {
     public enum SpellType { ICE, FIRE, LIGHTNING }
 
     private String name;
@@ -14,6 +17,8 @@ public class Spell implements Item {
     private double damage;
     private double manaCost;
     private SpellType type;
+
+    public Spell(){}
 
     public Spell(String name, double price, int minLevel, double damage, double manaCost, SpellType type) {
         this.name = name;
@@ -31,4 +36,11 @@ public class Spell implements Item {
     public double getDamage() { return damage; }
     public double getManaCost() { return manaCost; }
     public SpellType getType() { return type; }
+
+    public abstract double getEffect();
+
+    public void castEffect(Monster target)
+    {
+        target.setDefense(target.getDefense() * getEffect());
+    }
 }

@@ -2,6 +2,10 @@ package core.util;
 
 import core.model.entity.*;
 import core.model.item.*;
+import core.model.item.spell.FireSpell;
+import core.model.item.spell.IceSpell;
+import core.model.item.spell.LightningSpell;
+import core.model.item.spell.Spell;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,8 +19,6 @@ import java.util.List;
  * @version 1.0
  */
 public class GameDataParser {
-
-
 
     // --- PARSE ITEMS ---
     public static List<Item> parseWeapons(String filePath) throws IOException {
@@ -90,11 +92,23 @@ public class GameDataParser {
             String[] parts = line.trim().split("\\s+");
             if (parts.length < 5) continue;
 
-            // File format: Name/cost/required level/damage/mana cost
-            items.add(new Spell(parts[0], Double.parseDouble(parts[1]),
-                    Integer.parseInt(parts[2]), Double.parseDouble(parts[3]),
-                    Double.parseDouble(parts[4]), type));
+            if (type == Spell.SpellType.valueOf("FIRE")) {
+                        items.add(new FireSpell(parts[0], Double.parseDouble(parts[1]),
+                        Integer.parseInt(parts[2]), Double.parseDouble(parts[3]),
+                        Double.parseDouble(parts[4]), type));
+            }
+            else if (type == Spell.SpellType.valueOf("LIGHTNING")) {
+                items.add(new LightningSpell(parts[0], Double.parseDouble(parts[1]),
+                        Integer.parseInt(parts[2]), Double.parseDouble(parts[3]),
+                        Double.parseDouble(parts[4]), type));
+            }
+            else if (type == Spell.SpellType.valueOf("ICE")){
+                items.add(new IceSpell(parts[0], Double.parseDouble(parts[1]),
+                        Integer.parseInt(parts[2]), Double.parseDouble(parts[3]),
+                        Double.parseDouble(parts[4]), type));
+            }
         }
+
         reader.close();
         return items;
     }

@@ -5,7 +5,7 @@ import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.LivingEntity;
 import core.model.item.Item;
-import core.model.item.Spell;
+import core.model.item.spell.Spell;
 import core.model.item.Weapon;
 
 import java.util.Scanner;

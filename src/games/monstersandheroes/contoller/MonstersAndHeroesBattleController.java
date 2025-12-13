@@ -3,7 +3,7 @@ package games.monstersandheroes.contoller;
 import core.model.Party;
 import core.model.entity.*;
 import core.model.item.Item;
-import core.model.item.Spell;
+import core.model.item.spell.Spell;
 import core.model.item.Weapon;
 import core.util.Colors;
 import core.util.GameConfig;

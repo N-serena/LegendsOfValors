@@ -2,6 +2,7 @@ package games.commoncontrollers;
 
 import core.model.entity.Hero;
 import core.model.item.*;
+import core.model.item.spell.Spell;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -13,7 +13,7 @@ import games.legendsofvalors.interfaces.Battle;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import core.model.entity.LivingEntity;
-import core.model.item.Spell;
+import core.model.item.spell.Spell;
 import core.model.item.Weapon;
 import games.legendsofvalors.model.world.LovBoard;
 
@@ -31,14 +31,13 @@ import java.util.Random;
 public class LoVBattle extends BattleController implements Battle {
 
     private LivingEntity attacker;
-    private LivingEntity target;
     private LovBoard board;
     private PartyController partyController;
-    private List<LivingEntity> entitiesInRange;
 
     private LoVHeroController valorHeroController;
 
     public LoVBattle() {
+        valorHeroController = new LoVHeroController();
         partyController = new PartyController();
         addHeroObservers(party);
     }
@@ -136,16 +135,6 @@ public class LoVBattle extends BattleController implements Battle {
             partyController.addObserver((ValorHero) hero);
         }
     }
-
-//    public void distributeRewards(Party party)
-//    {
-//        int i = 0;
-//
-//        for (Hero hero : party.getHeroes()) {
-//            (hero).addGold(target.getLevel() * 500);
-//            valorHeroController.gainExperience(hero, target.getLevel() * 2);
-//        }
-//    }
 
     public ValorMonster selectMonsterTarget()
     {

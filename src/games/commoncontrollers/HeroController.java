@@ -2,6 +2,7 @@ package games.commoncontrollers;
 
 import core.model.entity.Hero;
 import core.model.item.Weapon;
+import core.model.item.spell.Spell;
 import core.util.Colors;
 import core.util.GameConfig;
 
@@ -57,7 +58,7 @@ public class HeroController {
      * Calculates spell damage based on Hero Dexterity + Spell Base Dmg.
      * Formula: Base + (Dex/10000 * Base)
      */
-    public double calculateSpellDamage(Hero hero, core.model.item.Spell spell) {
+    public double calculateSpellDamage(Hero hero, Spell spell) {
         return spell.getDamage() + (hero.getDexterity() / 10000.0) * spell.getDamage();
     }
 }

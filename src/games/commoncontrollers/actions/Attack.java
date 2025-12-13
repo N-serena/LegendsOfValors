@@ -50,7 +50,6 @@ public class Attack implements FightStrategy {
                 double incomingDmg = monster.getBaseDamage();
 
                 // Armor reduction logic
-                // (This logic is simple enough to stay here, or you could move 'calculateDefense' to HeroController too)
                 double defense = (hero.getEquippedArmor() != null) ? hero.getEquippedArmor().getDamageReduction() : 0;
                 double actualDmg = Math.max(0, incomingDmg - defense);
 
