@@ -559,6 +559,35 @@ public class LovBoard implements Board {
         return Colors.BG_WHITE;
     }
 
+    public ValorMonster getLeadingMonsterInLane(int column) {
+        Lane lane = getLaneForColumn(column);
+        if (lane == null) return null;
+
+        ValorMonster leader = null;
+        int maxRow = -1;
+
+        // Iterate through all monsters to find the one in this lane with the highest row index
+        for (Map.Entry<ValorMonster, Position> entry : monsterPositions.entrySet()) {
+            // Check if monster is in the same lane (by checking if the lane contains the monster's col)
+            if (lane.contains(entry.getValue().col)) {
+                if (entry.getValue().row > maxRow) {
+                    maxRow = entry.getValue().row;
+                    leader = entry.getKey();
+                }
+            }
+        }
+        return leader;
+    }
+
+    // Helper for TeleportCommand: Checks if a cell is blocked
+    public boolean isCellBlocked(int r, int c) {
+        if (!inBounds(r, c)) return true;
+        if (!tiles[r][c].isAccessible()) return true;
+        // Check occupancy
+        if (occupancy[r][c].hero != null || occupancy[r][c].monster != null) return true;
+        return false;
+    }
+
     private String createHorizontalBorder() {
         StringBuilder border = new StringBuilder();
         border.append('+');

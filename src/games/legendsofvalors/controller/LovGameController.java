@@ -1,9 +1,13 @@
 package games.legendsofvalors.controller;
 
 import core.interfaces.GameEngine;
+import core.model.GameDatabase;
+import core.model.entity.Monster;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;
+import games.legendsofvalors.states.HeroTurnState;
+import games.legendsofvalors.states.LovGameState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +16,30 @@ import java.util.Scanner;
 public class LovGameController implements GameEngine {
     private LovBoard board = new LovBoard();
     private Scanner scanner = new Scanner(System.in);
+    private LovGameState currentState;
+    private List<ValorHero> heroes; // Need to track heroes list
+    private int roundNumber = 1;
+    private boolean isRunning = true;
+
+    public LovGameController() {
+        this.board = new LovBoard();
+        this.scanner = new Scanner(System.in);
+        this.heroes = new ArrayList<>();
+    }
 
     @Override
     public void startGame() {
         System.out.println("--- LEGENDS OF VALOR ---");
+        GameDatabase.getInstance().loadData();
+        List<Monster> monsters = GameDatabase.getInstance().getAllMonsters();
         demoBoardSetup();
-        System.out.println(board.renderColored());
+        this.currentState = new HeroTurnState();
         System.out.println("Press 'L' to view map instructions/legend.");
         promptLegend();
+        while (isRunning) {
+            System.out.println(board.renderColored());
+            currentState.execute(this);
+        }
     }
 
     private void promptLegend() {
@@ -75,7 +95,13 @@ public class LovGameController implements GameEngine {
         return "Bot";
     }
 
-    public LovBoard getBoard() {
-        return board;
+    public void setState(LovGameState newState) {
+        this.currentState = newState;
     }
+
+    public LovBoard getBoard() { return board; }
+    public Scanner getScanner() { return scanner; }
+    public List<ValorHero> getHeroes() { return heroes; }
+    public int getRoundNumber() { return roundNumber; }
+    public void incrementRound() { this.roundNumber++; }
 }

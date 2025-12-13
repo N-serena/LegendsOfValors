@@ -1,6 +1,7 @@
 package games.monstersandheroes.contoller;
 
 import core.interfaces.GameEngine;
+import core.model.GameDatabase;
 import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.Monster;
@@ -89,20 +90,14 @@ public class MHGameController implements GameEngine {
 
     private void loadGameData() throws IOException {
         System.out.println("Loading game assets...");
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Warriors.txt", "Warrior"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Sorcerers.txt", "Sorcerer"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Paladins.txt", "Paladin"));
+        // Delegate to Singleton
+        GameDatabase db = GameDatabase.getInstance();
+        db.loadData();
 
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Dragons.txt", "Dragon"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Exoskeletons.txt", "Exoskeleton"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Spirits.txt", "Spirit"));
-
-        allItems.addAll(GameDataParser.parseWeapons("data_files/Weaponry.txt"));
-        allItems.addAll(GameDataParser.parseArmor("data_files/Armory.txt"));
-        allItems.addAll(GameDataParser.parsePotions("data_files/Potions.txt"));
-        allItems.addAll(GameDataParser.parseSpells("data_files/IceSpells.txt", core.model.item.Spell.SpellType.ICE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", core.model.item.Spell.SpellType.FIRE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", core.model.item.Spell.SpellType.LIGHTNING));
+        // Reference the loaded lists
+        this.allHeroes = db.getAllHeroes();
+        this.allMonsters = db.getAllMonsters();
+        this.allItems = db.getAllItems();
     }
 
     private void selectParty() {
