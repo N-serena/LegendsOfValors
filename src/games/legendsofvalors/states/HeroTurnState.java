@@ -95,24 +95,25 @@ public class HeroTurnState implements LovGameState {
 
     // Helper to auto-target the nearest monster
     private ValorMonster findTarget(LovBoard board, ValorHero hero) {
-        // Person 2's LovCombat has 'isTargetInRange', but we can also check the board directly
-        // for neighbors.
-        // Simplified: Check the 8 neighbors for a monster.
         LovBoard.Position hPos = board.getHeroPosition(hero);
         for (int r = hPos.row - 1; r <= hPos.row + 1; r++) {
             for (int c = hPos.col - 1; c <= hPos.col + 1; c++) {
-                if (board.getTile(r, c) != null) { // Check bounds implicitly via getTile safely?
-                    // Better: ask board for monster at (r,c)
-                    // We need a method in LovBoard: getMonsterAt(r, c)
-                    // Assuming we can access the monster map or iterate:
-                    // For now, let's iterate board.getMonstersReadyToAttack(1) or similar logic
+                // Skip the hero's own center tile (optional, but good practice)
+                if (r == hPos.row && c == hPos.col) continue;
+
+                // We need to find if a monster is at (r, c).
+                // Since LovBoard doesn't have 'getMonsterAt', we iterate the known monsters.
+                // (Optimized: You should add getMonsterAt to LovBoard, but this works for P3 isolation)
+                for (core.model.entity.Monster m : core.model.GameDatabase.getInstance().getAllMonsters()) {
+                    if (m instanceof ValorMonster) {
+                        LovBoard.Position mPos = board.getMonsterPosition((ValorMonster) m);
+                        if (mPos != null && mPos.row == r && mPos.col == c) {
+                            return (ValorMonster) m;
+                        }
+                    }
                 }
             }
         }
-        // Since we don't have a clean "getMonsterAt" helper yet, let's ask Person 1 for it later.
-        // For now, we return null to allow compilation.
         return null;
     }
-
-    //getMonsterAt(r,c): Ask Person 1 (Map) to add a helper so you can easily find the target for the attack command.
 }

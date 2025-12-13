@@ -50,10 +50,10 @@ public class LovGameController implements GameEngine {
     }
 
     private void demoBoardSetup() {
-        List<ValorHero> heroes = new ArrayList<ValorHero>();
-        heroes.add(new ValorHero("DemoWarrior", 100, 100, 100, 100, 500, 0));
-        heroes.add(new ValorHero("DemoSorcerer", 120, 80, 90, 110, 450, 0));
-        heroes.add(new ValorHero("DemoPaladin", 110, 95, 85, 105, 470, 0));
+        //List<ValorHero> heroes = new ArrayList<ValorHero>();
+        this.heroes.add(new ValorHero("DemoWarrior", 100, 100, 100, 100, 500, 0));
+        this.heroes.add(new ValorHero("DemoSorcerer", 120, 80, 90, 110, 450, 0));
+        this.heroes.add(new ValorHero("DemoPaladin", 110, 95, 85, 105, 470, 0));
 
         int[][] heroSlots = new int[][]{
                 {7, 0},
