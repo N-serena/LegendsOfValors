@@ -98,7 +98,7 @@ public class HeroTurnState implements LovGameState {
         return null;
     }
 
-    // --- Refactored Handlers for clarity ---
+    // --- Refactored Handlers  ---
     private LovCommand handleTeleportInput(Scanner scanner, LovBoard board, ValorHero currentHero, List<ValorHero> party) {
         System.out.println("Select a hero to teleport to:");
 
