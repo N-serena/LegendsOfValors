@@ -7,6 +7,7 @@ import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.generator.RandomTerrainGenerator;
 import games.legendsofvalors.model.world.generator.TerrainGenerator;
+import games.legendsofvalors.util.GameConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,25 +29,11 @@ import java.util.stream.Collectors;
  * Handles tile generation, occupancy tracking, rendering, monster AI, and spawn logic.
  */
 public class LovBoard implements Board {
-    public static final int BOARD_SIZE = 8;
-    public static final int DEFAULT_SPAWN_INTERVAL = 8;
-    private static final int CELL_WIDTH = 6;
-    private static final double BUFF_MULTIPLIER = 1.1;
-
-    private static final String TOP_LANE_COLOR = Colors.BG_BRIGHT_BLUE;
-    private static final String MID_LANE_COLOR = Colors.BG_BRIGHT_GREEN;
-    private static final String BOT_LANE_COLOR = Colors.BG_BRIGHT_YELLOW;
-    private static final String MONSTER_NEXUS_COLOR = Colors.BG_RED;
-    private static final String INACCESSIBLE_COLOR = Colors.BG_BLACK;
-    private static final String BUSH_COLOR = Colors.BG_GREEN;
-    private static final String CAVE_COLOR = Colors.BG_PURPLE;
-    private static final String KOULOU_COLOR = Colors.BG_BRIGHT_WHITE;
-    private static final String OBSTACLE_COLOR = Colors.BG_BRIGHT_PURPLE;
 
     private static final Set<Integer> INACCESSIBLE_COLUMNS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(2, 5)));
 
-    private final LovTile[][] tiles = new LovTile[BOARD_SIZE][BOARD_SIZE];
-    private final CellState[][] occupancy = new CellState[BOARD_SIZE][BOARD_SIZE];
+    private final LovTile[][] tiles = new LovTile[GameConfig.BOARD_SIZE][GameConfig.BOARD_SIZE];
+    private final CellState[][] occupancy = new CellState[GameConfig.BOARD_SIZE][GameConfig.BOARD_SIZE];
     private final Map<ValorHero, Position> heroPositions = new LinkedHashMap<>();
     private final Map<ValorMonster, Position> monsterPositions = new LinkedHashMap<>();
     private final Map<ValorHero, TerrainBuffRecord> activeHeroBuffs = new HashMap<>();
@@ -79,7 +66,7 @@ public class LovBoard implements Board {
     public LovBoard(Random random, TerrainGenerator terrainGenerator) {
         this.random = (random == null) ? new Random() : random;
         this.terrainGenerator = Objects.requireNonNull(terrainGenerator, "terrainGenerator");
-        this.spawnInterval = DEFAULT_SPAWN_INTERVAL;
+        this.spawnInterval = GameConfig.DEFAULT_SPAWN_INTERVAL;
         this.roundsSinceLastSpawn = 0;
         this.lanes = initialiseLanes();
         initialiseOccupancy();
@@ -90,17 +77,17 @@ public class LovBoard implements Board {
     // 准备不可变的线路配置及其列索引。
     private List<Lane> initialiseLanes() {
         List<Lane> laneConfig = new ArrayList<>();
-        laneConfig.add(new Lane("Top", new int[]{0, 1}, TOP_LANE_COLOR));
-        laneConfig.add(new Lane("Mid", new int[]{3, 4}, MID_LANE_COLOR));
-        laneConfig.add(new Lane("Bot", new int[]{6, 7}, BOT_LANE_COLOR));
+        laneConfig.add(new Lane("Top", new int[]{0, 1}, GameConfig.TOP_LANE_COLOR));
+        laneConfig.add(new Lane("Mid", new int[]{3, 4}, GameConfig.MID_LANE_COLOR));
+        laneConfig.add(new Lane("Bot", new int[]{6, 7}, GameConfig.BOT_LANE_COLOR));
         return Collections.unmodifiableList(laneConfig);
     }
 
     // Initializes cell occupancy tracking for heroes and monsters.
     // 初始化格子占用状态，记录英雄与怪物。
     private void initialiseOccupancy() {
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            for (int col = 0; col < BOARD_SIZE; col++) {
+        for (int row = 0; row < GameConfig.BOARD_SIZE; row++) {
+            for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
                 occupancy[row][col] = new CellState();
             }
         }
@@ -116,8 +103,8 @@ public class LovBoard implements Board {
     // Places Nexus and inaccessible tiles deterministically before terrain randomization.
     // 在随机化前放置固定的 Nexus 与不可达格。
     private void layStaticCells() {
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            for (int col = 0; col < BOARD_SIZE; col++) {
+        for (int row = 0; row < GameConfig.BOARD_SIZE; row++) {
+            for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
                 if (INACCESSIBLE_COLUMNS.contains(col)) {
                     tiles[row][col] = LovTile.inaccessible();
                     continue;
@@ -131,7 +118,7 @@ public class LovBoard implements Board {
 
                 if (row == 0) {
                     tiles[row][col] = LovTile.monsterNexus();
-                } else if (row == BOARD_SIZE - 1) {
+                } else if (row == GameConfig.BOARD_SIZE - 1) {
                     tiles[row][col] = LovTile.heroNexus();
                 } else {
                     tiles[row][col] = LovTile.terrain(LovTile.Terrain.PLAIN);
@@ -164,14 +151,14 @@ public class LovBoard implements Board {
     // Board width is fixed at 8 columns for Legends of Valor.
     // 地图宽度固定为 8 列。
     public int getWidth() {
-        return BOARD_SIZE;
+        return GameConfig.BOARD_SIZE;
     }
 
     @Override
     // Board height is fixed at 8 rows for Legends of Valor.
     // 地图高度固定为 8 行。
     public int getHeight() {
-        return BOARD_SIZE;
+        return GameConfig.BOARD_SIZE;
     }
 
     // Places or repositions a hero while applying terrain effects and clearing obstacles.
@@ -440,9 +427,9 @@ public class LovBoard implements Board {
         StringBuilder sb = new StringBuilder();
         String horizontalBorder = createHorizontalBorder();
         sb.append(horizontalBorder);
-        for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int row = 0; row < GameConfig.BOARD_SIZE; row++) {
             sb.append('|');
-            for (int col = 0; col < BOARD_SIZE; col++) {
+            for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
                 sb.append(formatCell(row, col, colored)).append('|');
             }
             sb.append(System.lineSeparator()).append(horizontalBorder);
@@ -455,23 +442,23 @@ public class LovBoard implements Board {
     public String getLegendText() {
         StringBuilder sb = new StringBuilder();
         sb.append("Map Legend (press 'L' to view in game):").append(System.lineSeparator());
-        sb.append(colorSwatch(MONSTER_NEXUS_COLOR, "Nexus"))
+        sb.append(colorSwatch(GameConfig.MONSTER_NEXUS_COLOR, "Nexus"))
                 .append("  Monsters' Nexus - spawn point for enemies.").append(System.lineSeparator());
-        sb.append(colorSwatch(TOP_LANE_COLOR, "Top"))
+        sb.append(colorSwatch(GameConfig.TOP_LANE_COLOR, "Top"))
                 .append("  Top lane path controlled by heroes.").append(System.lineSeparator());
-        sb.append(colorSwatch(MID_LANE_COLOR, "Mid"))
+        sb.append(colorSwatch(GameConfig.MID_LANE_COLOR, "Mid"))
                 .append("  Mid lane path controlled by heroes.").append(System.lineSeparator());
-        sb.append(colorSwatch(BOT_LANE_COLOR, "Bot"))
+        sb.append(colorSwatch(GameConfig.BOT_LANE_COLOR, "Bot"))
                 .append("  Bot lane path controlled by heroes.").append(System.lineSeparator());
-        sb.append(colorSwatch(BUSH_COLOR, "Bush"))
+        sb.append(colorSwatch(GameConfig.BUSH_COLOR, "Bush"))
                 .append("  Bush tile - grants Dexterity bonus while standing here.").append(System.lineSeparator());
-        sb.append(colorSwatch(CAVE_COLOR, "Cave"))
+        sb.append(colorSwatch(GameConfig.CAVE_COLOR, "Cave"))
                 .append("  Cave tile - grants Agility bonus while standing here.").append(System.lineSeparator());
-        sb.append(colorSwatch(KOULOU_COLOR, "Koulou"))
+        sb.append(colorSwatch(GameConfig.KOULOU_COLOR, "Koulou"))
                 .append("  Koulou tile - grants Strength bonus while standing here.").append(System.lineSeparator());
-        sb.append(colorSwatch(OBSTACLE_COLOR, "Block"))
+        sb.append(colorSwatch(GameConfig.OBSTACLE_COLOR, "Block"))
                 .append("  Temporary obstacle - clears to Plain after a hero enters.").append(System.lineSeparator());
-        sb.append(colorSwatch(INACCESSIBLE_COLOR, "Wall"))
+        sb.append(colorSwatch(GameConfig.INACCESSIBLE_COLOR, "Wall"))
                 .append("  Inaccessible wall - cannot be entered.").append(System.lineSeparator());
         sb.append("H# / M# markers show hero or monster occupying a cell.");
         return sb.toString();
@@ -480,8 +467,8 @@ public class LovBoard implements Board {
     // Clears occupancy and labels so the board can be reused or restarted.
     // 清空占用状态与标签，以便重新开始或复用地图。
     public void reset() {
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            for (int col = 0; col < BOARD_SIZE; col++) {
+        for (int row = 0; row < GameConfig.BOARD_SIZE; row++) {
+            for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
                 occupancy[row][col].clear();
             }
         }
@@ -559,15 +546,15 @@ public class LovBoard implements Board {
         switch (tile.getTerrain()) {
             case BUSH:
                 activeHeroBuffs.put(hero, TerrainBuffRecord.dexterity(hero.getDexterity()));
-                hero.setDexterity(hero.getDexterity() * BUFF_MULTIPLIER);
+                hero.setDexterity(hero.getDexterity() * GameConfig.BUFF_MULTIPLIER);
                 break;
             case CAVE:
                 activeHeroBuffs.put(hero, TerrainBuffRecord.agility(hero.getAgility()));
-                hero.setAgility(hero.getAgility() * BUFF_MULTIPLIER);
+                hero.setAgility(hero.getAgility() * GameConfig.BUFF_MULTIPLIER);
                 break;
             case KOULOU:
                 activeHeroBuffs.put(hero, TerrainBuffRecord.strength(hero.getStrength()));
-                hero.setStrength(hero.getStrength() * BUFF_MULTIPLIER);
+                hero.setStrength(hero.getStrength() * GameConfig.BUFF_MULTIPLIER);
                 break;
             default:
                 // Plain/Obstacle do not grant buffs
@@ -630,10 +617,10 @@ public class LovBoard implements Board {
     private String determineBackground(int row, int col) {
         LovTile tile = tiles[row][col];
         if (!tile.isAccessible()) {
-            return INACCESSIBLE_COLOR;
+            return GameConfig.INACCESSIBLE_COLOR;
         }
         if (tile.isMonsterNexus()) {
-            return MONSTER_NEXUS_COLOR;
+            return GameConfig.MONSTER_NEXUS_COLOR;
         }
         if (tile.isHeroNexus()) {
             return laneColorForColumn(col);
@@ -644,13 +631,13 @@ public class LovBoard implements Board {
         }
         switch (terrain) {
             case BUSH:
-                return BUSH_COLOR;
+                return GameConfig.BUSH_COLOR;
             case CAVE:
-                return CAVE_COLOR;
+                return GameConfig.CAVE_COLOR;
             case KOULOU:
-                return KOULOU_COLOR;
+                return GameConfig.KOULOU_COLOR;
             case OBSTACLE:
-                return OBSTACLE_COLOR;
+                return GameConfig.OBSTACLE_COLOR;
             case PLAIN:
             default:
                 return laneColorForColumn(col);
@@ -684,8 +671,8 @@ public class LovBoard implements Board {
     private String createHorizontalBorder() {
         StringBuilder border = new StringBuilder();
         border.append('+');
-        for (int col = 0; col < BOARD_SIZE; col++) {
-            for (int i = 0; i < CELL_WIDTH; i++) {
+        for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
+            for (int i = 0; i < GameConfig.CELL_WIDTH; i++) {
                 border.append('-');
             }
             border.append('+');
@@ -709,7 +696,7 @@ public class LovBoard implements Board {
     // Checks that the requested coordinates fall within the board limits.
     // 判断坐标是否处于地图范围内。
     private boolean inBounds(int row, int col) {
-        return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+        return row >= 0 && row < GameConfig.BOARD_SIZE && col >= 0 && col < GameConfig.BOARD_SIZE;
     }
 
     // Throws if the provided coordinates are outside the board.
@@ -730,11 +717,11 @@ public class LovBoard implements Board {
     // 将内容填充到固定宽度，确保表格对齐。
     private String pad(String raw) {
         String value = (raw == null) ? "" : raw;
-        if (value.length() >= CELL_WIDTH) {
-            return value.substring(0, CELL_WIDTH);
+        if (value.length() >= GameConfig.CELL_WIDTH) {
+            return value.substring(0, GameConfig.CELL_WIDTH);
         }
         StringBuilder builder = new StringBuilder(value);
-        while (builder.length() < CELL_WIDTH) {
+        while (builder.length() < GameConfig.CELL_WIDTH) {
             builder.append(' ');
         }
         return builder.toString();

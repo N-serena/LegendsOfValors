@@ -2,6 +2,7 @@ package games.legendsofvalors.model.world.generator;
 
 import games.legendsofvalors.model.world.LovBoard;
 import games.legendsofvalors.model.world.LovTile;
+import games.legendsofvalors.util.GameConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,10 +15,6 @@ import java.util.Random;
  * 默认地形生成器，保证特殊地形在地图上合理分布。
  */
 public class RandomTerrainGenerator implements TerrainGenerator {
-    private static final double PLAIN_WEIGHT = 0.55;
-    private static final double BUSH_WEIGHT = 0.15;
-    private static final double CAVE_WEIGHT = 0.15;
-    private static final double KOULOU_WEIGHT = 0.1;
 
     @Override
     // Populate the inner lane tiles with randomized terrain while preserving mandatory types.
@@ -85,16 +82,16 @@ public class RandomTerrainGenerator implements TerrainGenerator {
     // 根据设定的权重生成一个随机地形类型。
     private LovTile.Terrain rollTerrain(Random random) {
         double roll = random.nextDouble();
-        if (roll < PLAIN_WEIGHT) {
+        if (roll < GameConfig.PLAIN_WEIGHT) {
             return LovTile.Terrain.PLAIN;
         }
-        if (roll < PLAIN_WEIGHT + BUSH_WEIGHT) {
+        if (roll < GameConfig.PLAIN_WEIGHT + GameConfig.BUSH_WEIGHT) {
             return LovTile.Terrain.BUSH;
         }
-        if (roll < PLAIN_WEIGHT + BUSH_WEIGHT + CAVE_WEIGHT) {
+        if (roll < GameConfig.PLAIN_WEIGHT + GameConfig.BUSH_WEIGHT + GameConfig.CAVE_WEIGHT) {
             return LovTile.Terrain.CAVE;
         }
-        if (roll < PLAIN_WEIGHT + BUSH_WEIGHT + CAVE_WEIGHT + KOULOU_WEIGHT) {
+        if (roll < GameConfig.PLAIN_WEIGHT + GameConfig.BUSH_WEIGHT + GameConfig.CAVE_WEIGHT + GameConfig.KOULOU_WEIGHT) {
             return LovTile.Terrain.KOULOU;
         }
         return LovTile.Terrain.OBSTACLE;
