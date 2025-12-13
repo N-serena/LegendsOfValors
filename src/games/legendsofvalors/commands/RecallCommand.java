@@ -15,7 +15,6 @@ public class RecallCommand implements LovCommand {
     @Override
     public boolean execute() {
         // 1. Check if Recall is possible
-        // (Optional: You might want to block recall if the nexus is occupied by another hero,
         // though the rules imply it's always safe).
         int targetRow = hero.getNexusRow();
         int targetCol = hero.getNexusCol();
@@ -29,7 +28,7 @@ public class RecallCommand implements LovCommand {
 
         // 3. Reset Hero State (HP/Mana)
         // This method is inside ValorHero (Person 2's work)
-        hero.recall();
+        hero.regenerateStats();
 
         // 4. Move Visually on Board
         // We use 'placeHero' or 'moveHero' to update the grid
