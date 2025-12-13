@@ -4,14 +4,12 @@ import games.legendsofvalors.commands.LovCommand;
 import games.legendsofvalors.commands.MoveCommand;
 import games.legendsofvalors.controller.LovGameController;
 
-import games.legendsofvalors.controller.LovGameController;
 import games.legendsofvalors.commands.*;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class HeroTurnState implements LovGameState {
@@ -47,10 +45,10 @@ public class HeroTurnState implements LovGameState {
                     case "S": command = new MoveCommand(board, hero, 1, 0); break;  // South
                     case "D": command = new MoveCommand(board, hero, 0, 1); break;  // East
                     //Action Commands
-                    case "M": handleMarketInput(scanner, board, hero); break;
+                    case "M": handleMarketInput(scanner, board, hero, context); break;
                     case "T": command = handleTeleportInput(scanner, board, hero, context.getHeroes()); break;
                     case "R": command = new RecallCommand(board, hero); break;
-                    case "K": command = handleAttackInput(board, hero); break;
+                    case "K": command = handleAttackInput(board, hero, context); break;
                     case "I": handleInfoInput(hero); break;
                     case "Q": System.exit(0); break;
                     default: System.out.println("Invalid command.");
@@ -148,48 +146,42 @@ public class HeroTurnState implements LovGameState {
 
         return null; // Return null if cancelled or invalid
     }
-    private LovCommand handleAttackInput(LovBoard board, ValorHero hero) {
-
+    private LovCommand handleAttackInput(LovBoard board, ValorHero hero, LovGameController context) {
         ValorMonster target = findTarget(board, hero);
         if (target != null) {
-            return new AttackCommand(board, hero, target);
+            // FIX: Pass 'context.getParty()' as the 4th argument
+            return new AttackCommand(board, hero, target, context.getParty());
         } else {
             System.out.println("No monsters in range (Range: 1).");
             return null;
         }
     }
-    private void handleMarketInput(Scanner scanner, LovBoard board, ValorHero hero) {
+    private void handleMarketInput(Scanner scanner, LovBoard board, ValorHero hero, LovGameController context) {
         LovBoard.Position currentPos = board.getHeroPosition(hero);
 
         // 1. Check Rule: Must be on Hero Nexus (Row 7)
-        if (currentPos != null && currentPos.row == LovBoard.BOARD_SIZE - 1) {
+        // LovTile.java defines nexus types, but checking row index is the safest quick check for now.
+        if (currentPos != null && currentPos.row == games.legendsofvalors.util.GameConfig.BOARD_SIZE - 1) {
             System.out.println("Entering the Nexus Market...");
 
-            // 2. Setup Dependencies for the existing MarketController
-            // We create a temporary Party containing just this hero so we can reuse the old controller
-            core.model.Party tempParty = new core.model.Party();
-            tempParty.addHero(hero);
+            // 2. Reuse MarketController from the Context
+            // This avoids null pointer errors or creating duplicate scanners
+            games.commoncontrollers.MarketController marketCtrl = context.getMarketController();
 
-            games.monstersandheroes.contoller.InventoryController invCtrl =
-                    new games.monstersandheroes.contoller.InventoryController(scanner);
-
-            games.monstersandheroes.contoller.MarketController marketCtrl =
-                    new games.monstersandheroes.contoller.MarketController(scanner, invCtrl);
-
-            // 3. Create a fresh Market using all available game items
-            // (Nexus markets usually have everything, or a random subset)
+            // 3. Create a fresh Market (Nexus has all items)
+            // Using Singleton Data from GameDatabase
             core.model.market.Market nexusMarket = new core.model.market.Market(
                     core.model.GameDatabase.getInstance().getAllItems()
             );
 
-            // 4. Launch the Market UI
-            marketCtrl.enterMarket(nexusMarket, tempParty);
+            // 4. Launch Market Logic
+            // handleShopper takes (Hero, Market)
+            marketCtrl.handleShopper(hero, nexusMarket);
 
-            // When enterMarket returns, the player is back in the turn loop
             System.out.println("Exited Market.");
 
         } else {
-            System.out.println("You must be at the Nexus (Row 7) to access the Market!");
+            System.out.println("You must be at the Nexus to shop!");
         }
     }
     private void handleInfoInput(ValorHero hero) {
