@@ -10,6 +10,11 @@ import core.model.world.MarketTile;
 import core.util.GameConfig;
 import core.util.GameDataParser;
 import core.util.SoundPlayer;
+import games.commoncontrollers.GameController;
+import games.commoncontrollers.HeroController;
+import games.commoncontrollers.InventoryController;
+import games.commoncontrollers.MarketController;
+
 import games.monstersandheroes.view.GameView;
 import games.monstersandheroes.model.Board;
 import core.model.world.Tile;
@@ -27,7 +32,7 @@ import java.util.Scanner;
  * * @author Serena N.
  * @version 3.0 (Refactored)
  */
-public class MHGameController implements GameEngine {
+public class MHGameController extends GameController implements GameEngine {
     private Scanner scanner;
     private Party party;
     private Board board;

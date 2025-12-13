@@ -1,5 +1,6 @@
 package core.model.entity;
 
+import core.interfaces.HeroObserver;
 import core.model.item.Armor;
 import core.model.item.Item;
 import core.model.item.Weapon;
@@ -25,7 +26,9 @@ public abstract class Hero extends LivingEntity {
 
     // Inventory State
     protected List<Item> inventory;
-    protected Weapon equippedWeapon;
+    protected Weapon equippedWeapon; //should be a list of weapons
+    protected List<Weapon> equippedWeapons;
+    protected int handsInUse;
     protected Armor equippedArmor;
 
     /**
@@ -40,6 +43,7 @@ public abstract class Hero extends LivingEntity {
         this.gold = money;
         this.experience = exp;
         this.inventory = new ArrayList<>();
+        this.equippedWeapons = new ArrayList<>();
     }
 
     /**
@@ -91,7 +95,7 @@ public abstract class Hero extends LivingEntity {
     }
 
     // --- GETTERS & SETTERS ---
-    public void setEquippedWeapon(Weapon w) { this.equippedWeapon = w; }
+    public void setEquippedWeapon(Weapon w) { this.equippedWeapons.add(w); }
     public void setEquippedArmor(Armor a) { this.equippedArmor = a; }
 
     public void setExperience(double experience) { this.experience = experience; }
@@ -102,14 +106,16 @@ public abstract class Hero extends LivingEntity {
     public void setStrength(double strength) { this.strength = strength; }
     public void setDexterity(double dexterity) { this.dexterity = dexterity; }
     public void setAgility(double agility) { this.agility = agility; }
+    public void setHandsInUse(int hands) { this.handsInUse += hands; }
     public double getMana() { return mana; }
     public double getStrength() { return strength; }
     public double getDexterity() { return dexterity; }
     public double getAgility() { return agility; }
     public double getGold() { return gold; }
     public double getExperience() { return experience; }
-    public Weapon getEquippedWeapon() { return equippedWeapon; }
+    public List<Weapon> getEquippedWeapon() { return equippedWeapons; }
     public Armor getEquippedArmor() { return equippedArmor; }
+    public int getHandsInUse() { return handsInUse; }
 
     @Override
     public String toString() {

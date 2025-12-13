@@ -1,0 +1,4 @@
+Name/cost/level/damage/required hands
+Stick           500     1    50    1
+Knife           300     1    100    1
+Melee          1000    1    125   1  

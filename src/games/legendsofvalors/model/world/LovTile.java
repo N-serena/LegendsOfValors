@@ -32,42 +32,52 @@ public class LovTile extends Tile {
         this.inaccessible = inaccessible;
     }
 
+    // Create a hero nexus tile
     public static LovTile heroNexus() {
         return new LovTile(Terrain.PLAIN, NexusType.HERO, false, "HeroNexus");
     }
 
+    // Create a monster nexus tile
     public static LovTile monsterNexus() {
         return new LovTile(Terrain.PLAIN, NexusType.MONSTER, false, "MonsterNexus");
     }
 
+    // Create an inaccessible wall tile
     public static LovTile inaccessible() {
         return new LovTile(null, NexusType.NONE, true, "Inaccessible");
     }
 
+    // Create a regular terrain tile of the specified type.
     public static LovTile terrain(Terrain terrain) {
         return new LovTile(terrain, NexusType.NONE, false, terrainDisplayName(terrain));
     }
 
+    // Check whether this tile can be entered.
     public boolean isAccessible() {
         return !inaccessible;
     }
 
+    // Determine if the tile is currently an obstacle.
     public boolean isObstacle() {
         return terrain == Terrain.OBSTACLE;
     }
 
+    // Check whether this tile is the hero nexus.
     public boolean isHeroNexus() {
         return nexusType == NexusType.HERO;
     }
 
+    // Check whether this tile is the monster nexus。
     public boolean isMonsterNexus() {
         return nexusType == NexusType.MONSTER;
     }
 
+    // Get the nexus type for this tile.
     public NexusType getNexusType() {
         return nexusType;
     }
 
+    // Get the current terrain type.
     public Terrain getTerrain() {
         return terrain;
     }
@@ -82,6 +92,7 @@ public class LovTile extends Tile {
         }
     }
 
+    // Obtain the single-character symbol representing this tile.
     public char getSymbol() {
         if (inaccessible) {
             return 'I';
@@ -104,10 +115,12 @@ public class LovTile extends Tile {
         }
     }
 
+    // Check whether the tile grants a temporary stat buff.
     public boolean hasTerrainBuff() {
         return terrain == Terrain.BUSH || terrain == Terrain.CAVE || terrain == Terrain.KOULOU;
     }
 
+    // Convert the terrain enum to its display name.
     private static String terrainDisplayName(Terrain terrain) {
         switch (terrain) {
             case BUSH:

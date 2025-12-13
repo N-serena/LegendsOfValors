@@ -42,4 +42,7 @@ public class GameConfig {
 
     // Limits
     public static final int MAX_LEVEL = 10;
+    public static final double ICESPELLDAMAGE = 0.9;
+    public static final double FIRESPELLDAMAGE = 0.9;
+    public static final double LIGHTNINGSPELLDAMAGE = 0.9;
 }
