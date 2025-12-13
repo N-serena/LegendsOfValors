@@ -32,7 +32,7 @@ public class HeroTurnState implements LovGameState {
             while (!turnComplete) {
                 System.out.println(board.renderColored());
                 System.out.println("\nAction for " + hero.getName() + " (" + hero.getLane() + " Lane):");
-                System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [R] Recall | [M] Market | [I] Info/Equip | [Q] Quit");
+                System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [C] Cast Spell | [R] Recall | [M] Market | [I] Info/Equip | [Q] Quit");
                 System.out.print("> ");
                 String input = scanner.next().toUpperCase();
 
@@ -49,6 +49,7 @@ public class HeroTurnState implements LovGameState {
                     case "T": command = handleTeleportInput(scanner, board, hero, context.getHeroes()); break;
                     case "R": command = new RecallCommand(board, hero); break;
                     case "K": command = handleAttackInput(board, hero, context); break;
+                    case "C": command = handleSpellInput(board, hero, context); break;
                     case "I": handleInfoInput(hero); break;
                     case "Q": System.exit(0); break;
                     default: System.out.println("Invalid command.");
@@ -149,10 +150,21 @@ public class HeroTurnState implements LovGameState {
     private LovCommand handleAttackInput(LovBoard board, ValorHero hero, LovGameController context) {
         ValorMonster target = findTarget(board, hero);
         if (target != null) {
-            // FIX: Pass 'context.getParty()' as the 4th argument
             return new AttackCommand(board, hero, target, context.getParty());
         } else {
             System.out.println("No monsters in range (Range: 1).");
+            return null;
+        }
+    }
+    private LovCommand handleSpellInput(LovBoard board, ValorHero hero, LovGameController context) {
+        // Reuse your existing targeting logic
+        ValorMonster target = findTarget(board, hero);
+
+        if (target != null) {
+            // Return the new Spell Command
+            return new CastSpellCommand(board, hero, target, context.getParty());
+        } else {
+            System.out.println("No monsters in range to cast spells on.");
             return null;
         }
     }
