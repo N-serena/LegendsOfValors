@@ -189,6 +189,22 @@ public class HeroTurnState implements LovGameState {
         System.out.println("HP: " + hero.getHp() + " | Mana: " + hero.getMana());
         System.out.println("Str: " + hero.getStrength() + " | Dex: " + hero.getDexterity() + " | Agi: " + hero.getAgility());
         System.out.println("Gold: " + hero.getGold() + " | XP: " + hero.getExperience());
-        System.out.println("Equipped: " + (hero.getEquippedWeapon() != null ? hero.getEquippedWeapon().getName() : "None"));
+
+        // FIX: Handle List<Weapon> instead of single Weapon
+        System.out.print("Equipped Weapons: ");
+        java.util.List<core.model.item.Weapon> weapons = hero.getEquippedWeapon();
+
+        if (weapons == null || weapons.isEmpty()) {
+            System.out.println("None");
+        } else {
+            // Print all equipped weapons
+            for (core.model.item.Weapon w : weapons) {
+                System.out.print(w.getName() + " ");
+            }
+            System.out.println(); // New line
+        }
+
+        // Armor is still a single item
+        System.out.println("Equipped Armor: " + (hero.getEquippedArmor() != null ? hero.getEquippedArmor().getName() : "None"));
     }
 }

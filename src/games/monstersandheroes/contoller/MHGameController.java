@@ -220,19 +220,19 @@ public class MHGameController extends GameController implements GameEngine {
             double armorDef = (h.getEquippedArmor() != null) ? h.getEquippedArmor().getDamageReduction() : 0;
 
             // Calculate Total Damage (Strength + Weapon) using the Hero's logic method
-            double totalDmg = heroController.calculateDamage(h);
+            //double totalDmg = heroController.calculateDamage(h);
 
             // Calculate Dodge %
             double dodgeChance = heroController.calculateDodgeChance(h) * 100;
 
-            System.out.printf("     Damage:  %-5.0f (Str + Weapon)\n", totalDmg);
+            //System.out.printf("     Damage:  %-5.0f (Str + Weapon)\n", totalDmg);
             System.out.printf("     Defense: %-5.0f (Armor)\n", armorDef);
             System.out.printf("     Dodge:   %-5.0f%%\n", dodgeChance);
 
             // Gear
             System.out.println("    Equipped Gear");
             if (h.getEquippedWeapon() != null) {
-                System.out.printf("     Weapon: %s (Val: %.0f)\n", h.getEquippedWeapon().getName(), h.getEquippedWeapon().getDamage());
+                //System.out.printf("     Weapon: %s (Val: %.0f)\n", h.getEquippedWeapon().getName(), h.getEquippedWeapon().getDamage());
             } else {
                 System.out.println("     Weapon: None");
             }
@@ -297,7 +297,7 @@ public class MHGameController extends GameController implements GameEngine {
                 findRandomLoot();
             } else if (roll < GameConfig.CHANCE_BATTLE) {
                 // Pass scanner to battle controller to reuse input stream
-                BattleController battle = new BattleController(this.scanner, this.inventoryController, this.heroController);
+                MonstersAndHeroesBattleController battle = new MonstersAndHeroesBattleController(this.inventoryController, this.heroController);
                 battle.startBattle(party, allMonsters);
             }
         }
