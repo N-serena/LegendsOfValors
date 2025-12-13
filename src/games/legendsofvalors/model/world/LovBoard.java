@@ -118,11 +118,13 @@ public class LovBoard implements Board {
                 }
             }
         }
+    }
 
-        //---MINE---//
+    /**---MINE---**/
+    /*private void randomizeTerrain() {
         // 2. Randomise lane terrain for inner rows (1..6).
         List<Position> available = new ArrayList<>();
-        for (int row = 1; row < BOARD_SIZE - 1; row++) {
+        for (int row = 1; row < GameConfig.BOARD_SIZE - 1; row++) {
             for (Lane lane : lanes) {
                 for (int col : lane.columns) {
                     available.add(new Position(row, col));
@@ -130,7 +132,6 @@ public class LovBoard implements Board {
             }
         }
         Collections.shuffle(available, random);
-
         LovTile.Terrain[] required = new LovTile.Terrain[]{
                 LovTile.Terrain.BUSH,
                 LovTile.Terrain.CAVE,
@@ -149,7 +150,7 @@ public class LovBoard implements Board {
             LovTile.Terrain terrain = randomTerrain();
             tiles[pos.row][pos.col] = LovTile.terrain(terrain);
         }
-    }
+    }*/
 
     private LovTile.Terrain randomTerrain() {
         // Weighted random distribution favouring Plain tiles.
@@ -350,7 +351,6 @@ public class LovBoard implements Board {
     }
 
     // Returns monsters within the Manhattan range of a hero.
-    // 根据曼哈顿距离返回英雄攻击范围内的怪物。
     public Set<ValorMonster> getMonstersInRange(ValorHero hero, int range) {
         Position heroPosition = heroPositions.get(hero);
         if (heroPosition == null) {
@@ -675,7 +675,7 @@ public class LovBoard implements Board {
         return (lane != null) ? lane.getColor() : Colors.BG_WHITE;
     }
 
-    //MINEEEE
+    /** MINEEEE **/
     public ValorMonster getLeadingMonsterInLane(int column) {
         Lane lane = getLaneForColumn(column);
         if (lane == null) return null;
@@ -755,6 +755,7 @@ public class LovBoard implements Board {
         StringBuilder builder = new StringBuilder(value);
         while (builder.length() < GameConfig.CELL_WIDTH) {
             builder.append(' ');
+        }
         return builder.toString();
     }
 
