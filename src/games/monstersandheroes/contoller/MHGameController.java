@@ -10,10 +10,7 @@ import core.model.world.MarketTile;
 import core.util.GameConfig;
 import core.util.GameDataParser;
 import core.util.SoundPlayer;
-import games.commoncontrollers.GameController;
-import games.commoncontrollers.HeroController;
-import games.commoncontrollers.InventoryController;
-import games.commoncontrollers.MarketController;
+import games.commoncontrollers.*;
 
 import games.monstersandheroes.view.GameView;
 import games.monstersandheroes.model.Board;
@@ -93,7 +90,7 @@ public class MHGameController extends GameController implements GameEngine {
         gameLoop();
     }
 
-    private void loadGameData() throws IOException {
+    protected void loadGameData() throws IOException {
         System.out.println("Loading game assets...");
         // Delegate to Singleton
         GameDatabase db = GameDatabase.getInstance();
