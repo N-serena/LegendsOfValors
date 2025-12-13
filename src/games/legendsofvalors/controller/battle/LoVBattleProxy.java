@@ -32,6 +32,7 @@ public class LoVBattleProxy implements Battle {
     Scanner scanner;
 
     public LoVBattleProxy() {
+        this.scanner = new Scanner(System.in);
         inventoryController = new InventoryController(scanner);
     }
 
