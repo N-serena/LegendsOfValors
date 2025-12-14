@@ -2,6 +2,8 @@ package core.model.entity;
 
 import core.util.GameConfig;
 
+import static java.lang.Math.ceil;
+
 /** Abstract class for all monsters in the game
  ** @author Serena N
  *  * @version 1.0
@@ -53,6 +55,6 @@ public abstract class Monster extends LivingEntity {
 
     @Override
     public String toString() {
-        return name + " (Lvl " + level + ") - HP: " + hp;
+        return name + " (Lvl " + level + ") - HP: " + ceil(hp);
     }
 }

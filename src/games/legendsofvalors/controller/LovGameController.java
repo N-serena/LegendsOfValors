@@ -26,6 +26,7 @@ public class LovGameController extends GameController implements GameEngine {
     private LovGameState currentState;
     private int roundNumber = 1;
     public boolean isRunning = true;
+    public int numOfMonstersDefeated;
 
     //Controllers
     private MarketController marketController;
@@ -38,6 +39,7 @@ public class LovGameController extends GameController implements GameEngine {
         //Initialize controllers
         this.inventoryController = new InventoryController(scanner);
         this.marketController = new MarketController(scanner, inventoryController);
+        numOfMonstersDefeated = 0;
     }
 
     @Override
@@ -203,6 +205,21 @@ public class LovGameController extends GameController implements GameEngine {
             if (h instanceof ValorHero) vh.add((ValorHero) h);
         }
         return vh;
+    }
+
+    public void  displayEndGameStats(String status)
+    {
+        System.out.println("The heroes have " + status + " the game against the monsters.");
+        System.out.println(" + NUMBER OF ROUNDS PLAYED: " + roundNumber);
+        System.out.println("Hero Stats: ");
+        for(Hero h : party.getHeroes())
+        {
+            System.out.println(h);
+        }
+        System.out.println();
+        //System.out.println("NUMBER OF MONSTERS DEFEATED: " + numOfMonstersDefeated);
+        System.out.println("------------------------------------------------------------------");
+
     }
 
     public void displayBoard()

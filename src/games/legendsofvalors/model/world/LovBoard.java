@@ -331,6 +331,25 @@ public class LovBoard implements Board {
         }
     }
 
+    public boolean checkIfMonsterOnNexus()
+    {
+        for (Lane lane : lanes) {
+            List<Map.Entry<ValorMonster, Position>> laneMonsters = monsterPositions.entrySet().stream()
+                    .filter(entry -> lane.contains(entry.getValue().col))
+                    .sorted(Comparator.comparingInt(entry -> -entry.getValue().row))
+                    .collect(Collectors.toList());
+
+            for (Map.Entry<ValorMonster, Position> entry : laneMonsters) {
+                Position pos = entry.getValue();
+                if (pos != null && pos.row == games.legendsofvalors.util.GameConfig.BOARD_SIZE - 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
     // Returns heroes within the Manhattan range of a monster.
     public Set<ValorHero> getHeroesInRange(ValorMonster monster, int range) {
         Position monsterPosition = monsterPositions.get(monster);

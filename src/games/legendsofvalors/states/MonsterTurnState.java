@@ -51,16 +51,15 @@ public class MonsterTurnState implements LovGameState {
         board.advanceMonsters();
 
         // 3. CHECK LOSS CONDITION
-        for (Monster m : GameDatabase.getInstance().getAllMonsters()) {
-            if (m instanceof ValorMonster) {
-                LovBoard.Position pos = board.getMonsterPosition((ValorMonster) m);
-                if (pos != null && pos.row == games.legendsofvalors.util.GameConfig.BOARD_SIZE - 1) {
-                    System.out.println("\n***********************************");
-                    System.out.println(" GAME OVER! A Monster breached the Nexus!");
-                    System.out.println("***********************************");
-                    System.exit(0);
-                }
-            }
+
+        if(context.getBoard().checkIfMonsterOnNexus())
+        {
+            System.out.println("\n***********************************");
+            System.out.println(" GAME OVER! A Monster breached the Nexus!");
+            System.out.println("***********************************");
+            context.isRunning = false;
+            context.displayEndGameStats("lost");
+            //System.exit(0);
         }
 
         // 4. TRANSITION

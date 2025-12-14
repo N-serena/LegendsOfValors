@@ -9,6 +9,8 @@ import core.util.GameConfig;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.ceil;
+
 /**
  * Abstract parent class for all playable characters.
  * Represents the "Model" in MVC: holds state but delegates complex logic to Controllers.
@@ -119,6 +121,6 @@ public abstract class Hero extends LivingEntity {
 
     @Override
     public String toString() {
-        return name + " | HP: " + hp + " | Level: " + level;
+        return name + " | HP: " + ceil(hp) + " | Level: " + level;
     }
 }

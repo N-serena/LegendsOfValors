@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
+import static java.lang.Math.ceil;
+
 public class HeroTurnState implements LovGameState {
 
     InputHandler inputHandler;
@@ -80,7 +82,9 @@ public class HeroTurnState implements LovGameState {
             // Win Condition
             if (board.getHeroPosition(hero).row == 0) {
                 System.out.println("VICTORY! " + hero.getName() + " reached the Nexus!");
-                System.exit(0);
+                context.isRunning = false;
+                context.displayEndGameStats("won");
+                //System.exit(0);
             }
             if (!context.isRunning)
             {
@@ -179,7 +183,7 @@ public class HeroTurnState implements LovGameState {
                     h.getName(),
                     laneStr,
                     posStr,
-                    h.getHp(), h.getMana(),
+                    ceil(h.getHp()), ceil(h.getMana()),
                     h.getLevel(), h.getGold());
         }
         System.out.println("----------------------------------------------------------------");
@@ -218,7 +222,7 @@ public class HeroTurnState implements LovGameState {
                 if (closestThreats.containsKey(lane)) {
                     ValorMonster m = closestThreats.get(lane);
                     System.out.printf("%-5s | %-15s | %-5.0f | %-6d\n",
-                            lane, m.getName(), m.getHp(), minDistance.get(lane));
+                            lane, m.getName(), ceil(m.getHp()), minDistance.get(lane));
                 } else {
                     System.out.printf("%-5s | %-15s | %-5s | %-6s\n", lane, "Clear", "-", "-");
                 }
@@ -400,7 +404,7 @@ public class HeroTurnState implements LovGameState {
             for (core.model.item.Weapon w : weapons) {
                 System.out.print(w.getName() + " ");
             }
-            System.out.println(); // New line
+            System.out.println();
         }
 
         // Armor is still a single item
