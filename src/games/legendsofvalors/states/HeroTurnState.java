@@ -14,6 +14,7 @@ import games.legendsofvalors.model.world.LovBoard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class HeroTurnState implements LovGameState {
 
@@ -93,19 +94,20 @@ public class HeroTurnState implements LovGameState {
     private ValorMonster findTarget(LovBoard board, ValorHero hero) {
         LovBoard.Position hPos = board.getHeroPosition(hero);
 
-        List<ValorMonster> potentialTargets = new ArrayList<>();
+        List<ValorMonster> potentialTargets = new ArrayList<>(board.getMonstersInRange(hero, 1));
 
-        // Iterate through ACTIVE monsters on the board, not the database templates
-        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
-            LovBoard.Position mPos = entry.getValue();
 
-            // Check for adjacency (3x3 grid around hero)
-            // Logic: Row difference <= 1 AND Col difference <= 1
-            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
-                //return entry.getKey(); // Found a target!
-                potentialTargets.add(entry.getKey());
-            }
-        }
+//        // Iterate through ACTIVE monsters on the board, not the database templates
+//        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
+//            LovBoard.Position mPos = entry.getValue();
+//
+//            // Check for adjacency (3x3 grid around hero)
+//            // Logic: Row difference <= 1 AND Col difference <= 1
+//            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
+//                //return entry.getKey(); // Found a target!
+//                potentialTargets.add(entry.getKey());
+//            }
+//        }
 
         if (potentialTargets.size() == 1)
         {

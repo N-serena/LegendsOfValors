@@ -43,12 +43,12 @@ public class MoveCommand implements LovCommand {
             LovBoard.Position monsterPos = board.getMonsterPosition(laneMonster);
             // If the hero is currently "in front" (higher row index) of the monster
             // and tries to move to a row "behind" (lower/equal row index) the monster...
-            if (currentPos.row > monsterPos.row && targetRow <= monsterPos.row) {
+            if ( currentPos.row >= monsterPos.row && targetRow < monsterPos.row) {
                 System.out.println("Blocked! You cannot move behind " + laneMonster.getName() + " without killing it first!");
                 return false;
             }
             // Edge Case: If in adjacent column of same lane, ensure we don't slip past
-            if (currentPos.row > monsterPos.row && targetRow <= monsterPos.row && currentPos.col != monsterPos.col) {
+            if (currentPos.row >= monsterPos.row && targetRow < monsterPos.row && currentPos.col != monsterPos.col) {
                 System.out.println("Blocked! The monster in this lane prevents passing.");
                 return false;
             }

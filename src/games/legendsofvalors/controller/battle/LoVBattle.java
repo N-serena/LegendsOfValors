@@ -116,6 +116,10 @@ public class LoVBattle extends BattleController implements Battle {
         {
             Spell s = (Spell) selectSpellItem(attacker);
             currentFightStrategy.performFightAction(attacker, target, s);
+            if (target.isFainted())
+            {
+                partyController.defeatedMonster(target.getLevel());
+            }
         }
         return true;
     }
