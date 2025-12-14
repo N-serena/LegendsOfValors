@@ -12,10 +12,9 @@ public class ValorHero extends Hero implements HeroObserver {
     private int currentRow;
     private int currentCol;
 
-    // Constructor: Matches the config file format but adds LoV defaults
-    public ValorHero(String name, int mana, int str, int agi, int dex, int money, int xp) {
+    public ValorHero(String name, double mana, double str, double agi, double dex, double money, double xp) {
         super(name, mana, str, agi, dex, money, xp);
-        // Default values - these will be set when the game starts and assigns lanes
+        // Default values
         this.nexusRow = -1;
         this.nexusCol = -1;
         this.lane = "Unassigned";

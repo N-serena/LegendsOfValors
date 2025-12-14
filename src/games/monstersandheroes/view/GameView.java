@@ -11,7 +11,7 @@ import core.model.world.Tile;
  * @version 1.0
  */
 public class GameView {
-
+/*
     public void printTitleScreen() {
         System.out.println(Colors.YELLOW);
         System.out.println("  _    _   ______   _____     ____    ______   _____  ");
@@ -24,7 +24,7 @@ public class GameView {
         System.out.println(Colors.CYAN + "       LEGENDS: MONSTERS AND HEROES       " + Colors.RESET);
         System.out.println("          A Java Strategy RPG Adventure           ");
         System.out.println("\n--------------------------------------------------");
-    }
+    }*/
 
     public void printIntroStory() {
         System.out.println("\nTHE LORE:");

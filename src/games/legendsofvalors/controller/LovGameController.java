@@ -83,33 +83,103 @@ public class LovGameController extends GameController implements GameEngine {
     }
 
     private void setupGame() {
-        // Create Heroes
-        ValorHero h1 = new ValorHero("DemoWarrior", 100, 100, 100, 100, 500, 0);
-        ValorHero h2 = new ValorHero("DemoSorcerer", 120, 80, 90, 110, 450, 0);
-        ValorHero h3 = new ValorHero("DemoPaladin", 110, 95, 85, 105, 470, 0);
+        System.out.println("--- FORM YOUR PARTY ---");
+        System.out.println("You must select 3 Heroes to enter the Legends of Valor.");
 
-        // Add to the 'party' object (Inherited from GameController)
-        party.addHero(h1);
-        party.addHero(h2);
-        party.addHero(h3);
+        // 1. Get All Available Heroes from Database
+        List<Hero> allHeroes = GameDatabase.getInstance().getAllHeroes();
 
-        // Place Heroes on Board
+        // 2. Select 3 Heroes (One for each lane)
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("\nSelect Hero #" + i + " (" + getLaneName(getColForHeroIndex(i-1)) + " Lane):");
+            Hero selected = selectHero(allHeroes);
+
+            if (selected instanceof ValorHero) {
+                party.addHero(selected);
+            } else {
+                // If it's a base Hero, we might need to wrap it or just cast it
+                // Ideally, your Factory or DB should give ValorHeroes, but for now we cast/copy:
+                ValorHero vh = new ValorHero(selected.getName(), selected.getMana(),
+                        selected.getStrength(), selected.getAgility(),
+                        selected.getDexterity(), selected.getGold(), selected.getExperience());
+                party.addHero(vh);
+            }
+        }
+
+        // 3. Place Heroes on Board
+        // Indices 0, 1, 2 correspond to Top, Mid, Bot
         int[][] slots = {{7, 0}, {7, 3}, {7, 6}};
+
         for (int i = 0; i < party.getSize(); i++) {
             ValorHero h = (ValorHero) party.getHero(i);
             int r = slots[i][0];
             int c = slots[i][1];
-            h.setHomeNexus(r, c, getLaneName(c));
-            board.placeHero(h, r, c);
+
+            String lane = getLaneName(c);
+            h.setHomeNexus(r, c, lane);
+
+            if (board.placeHero(h, r, c)) {
+                System.out.println(h.getName() + " entered the " + lane + " Lane.");
+            }
         }
 
-        // Spawn Initial Monsters
+        // 4. Spawn Initial Monsters (Keep existing logic)
         List<Monster> templates = GameDatabase.getInstance().getAllMonsters();
         if (!templates.isEmpty()) {
             spawnMonster(templates.get(0), 0, 0, "Top");
             spawnMonster(templates.get(1), 0, 3, "Mid");
             spawnMonster(templates.get(2), 0, 6, "Bot");
         }
+    }
+
+    private Hero selectHero(List<Hero> options) {
+        System.out.printf("%-4s %-20s %-10s %-5s\n", "ID", "Name", "Type", "Lvl");
+        System.out.println("------------------------------------------------");
+
+        for (int i = 0; i < options.size(); i++) {
+            Hero h = options.get(i);
+            // Check if already selected
+            boolean taken = false;
+            for (int p = 0; p < party.getSize(); p++) {
+                if (party.getHero(p).getName().equals(h.getName())) taken = true;
+            }
+
+            if (taken) {
+                System.out.printf("%-4d %-20s [ALREADY SELECTED]\n", (i + 1), h.getName());
+            } else {
+                System.out.printf("%-4d %-20s %-10s %-5d\n", (i + 1), h.getName(), h.getClass().getSimpleName(), h.getLevel());
+            }
+        }
+
+        while (true) {
+            System.out.print("Enter ID: ");
+            if (scanner.hasNextInt()) {
+                int choice = scanner.nextInt();
+                if (choice > 0 && choice <= options.size()) {
+                    Hero h = options.get(choice - 1);
+                    // Prevent duplicates
+                    boolean taken = false;
+                    for (int p = 0; p < party.getSize(); p++) {
+                        if (party.getHero(p).getName().equals(h.getName())) taken = true;
+                    }
+                    if (taken) {
+                        System.out.println("Hero already in party!");
+                    } else {
+                        return h;
+                    }
+                } else {
+                    System.out.println("Invalid ID.");
+                }
+            } else {
+                scanner.next();
+            }
+        }
+    }
+
+    private int getColForHeroIndex(int idx) {
+        if (idx == 0) return 0; // Top
+        if (idx == 1) return 3; // Mid
+        return 6; // Bot
     }
 
     private void spawnMonster(Monster template, int r, int c, String lane) {
