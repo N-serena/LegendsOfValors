@@ -82,7 +82,7 @@ public class LoVBattleProxy implements Battle {
 
     public boolean checkIfHeroesInRange(LivingEntity attacker, LovBoard board)
     {
-        Set<ValorHero> heroes = board.getHeroesInRange((ValorMonster) attacker, 4);
+        Set<ValorHero> heroes = board.getHeroesInRange((ValorMonster) attacker, 2);
 
         if (heroes.isEmpty())
         {

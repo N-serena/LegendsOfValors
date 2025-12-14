@@ -31,7 +31,6 @@ import java.util.Scanner;
  */
 public class MHGameController extends GameController implements GameEngine {
     private Scanner scanner;
-    private Party party;
     private Board board;
     private GameView view;
 
@@ -97,33 +96,6 @@ public class MHGameController extends GameController implements GameEngine {
         this.allHeroes = db.getAllHeroes();
         this.allMonsters = db.getAllMonsters();
         this.allItems = db.getAllItems();
-    }
-
-    private void selectParty() {
-        System.out.println("\n--- HERO SELECTION ---");
-        int count = 0;
-        while (count < 1 || count > 3) {
-            System.out.print("Enter party size (1-3): ");
-            if (scanner.hasNextInt()) count = scanner.nextInt();
-            else scanner.next();
-        }
-
-        // Display Options
-        System.out.printf("%-4s %-20s %-10s\n", "ID", "Name", "Type");
-        for (int i = 0; i < allHeroes.size(); i++) {
-            System.out.printf("%-4d %-20s %-10s\n", (i+1), allHeroes.get(i).getName(), allHeroes.get(i).getClass().getSimpleName());
-        }
-
-        for (int i = 1; i <= count; i++) {
-            int choice = -1;
-            while (choice < 1 || choice > allHeroes.size()) {
-                System.out.print("Select Hero " + i + ": ");
-                if (scanner.hasNextInt()) choice = scanner.nextInt();
-                else scanner.next();
-            }
-            party.addHero(allHeroes.get(choice - 1));
-        }
-        System.out.println("Party assembled!");
     }
 
     private void gameLoop() {

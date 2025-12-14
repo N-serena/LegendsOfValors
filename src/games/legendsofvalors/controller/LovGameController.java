@@ -6,7 +6,6 @@ import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.Monster;
 import core.util.Colors;
-import core.util.SoundPlayer;
 import games.commoncontrollers.GameController;
 import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.MarketController;
@@ -105,6 +104,8 @@ public class LovGameController extends GameController implements GameEngine {
                 party.addHero(vh);
             }
         }
+
+        getComplimentaryWeapons();
 
         // 3. Place Heroes on Board
         // Indices 0, 1, 2 correspond to Top, Mid, Bot
