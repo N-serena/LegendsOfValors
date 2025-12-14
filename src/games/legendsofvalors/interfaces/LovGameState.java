@@ -1,4 +1,4 @@
-package games.legendsofvalors.states;
+package games.legendsofvalors.interfaces;
 
 import games.legendsofvalors.controller.LovGameController;
 

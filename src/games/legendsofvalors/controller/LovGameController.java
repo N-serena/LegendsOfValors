@@ -11,7 +11,7 @@ import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.MarketController;
 import games.commoncontrollers.PartyController;
 import games.legendsofvalors.states.HeroTurnState;
-import games.legendsofvalors.states.LovGameState;
+import games.legendsofvalors.interfaces.LovGameState;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;

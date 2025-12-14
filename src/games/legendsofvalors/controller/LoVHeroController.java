@@ -15,7 +15,7 @@ public class LoVHeroController extends HeroController {
 
         hero.regenerateStats();
 
-        //can use teleport here but for now use moveHero
+        //move hero to their nexus
         board.moveHero(hero, nexusRow, nexusCol);
     }
 

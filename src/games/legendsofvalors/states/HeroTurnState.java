@@ -1,12 +1,12 @@
 package games.legendsofvalors.states;
 
-import core.model.entity.Hero;
 import games.commoncontrollers.InputHandler;
 import games.legendsofvalors.interfaces.LovCommand;
 import games.legendsofvalors.commands.MoveCommand;
 import games.legendsofvalors.controller.LovGameController;
 
 import games.legendsofvalors.commands.*;
+import games.legendsofvalors.interfaces.LovGameState;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;

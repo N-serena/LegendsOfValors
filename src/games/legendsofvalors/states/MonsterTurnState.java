@@ -6,6 +6,7 @@ import games.commoncontrollers.actions.Attack; // P2 Strategy
 import games.legendsofvalors.controller.LovGameController;
 import games.legendsofvalors.controller.battle.LoVBattleProxy;
 import games.legendsofvalors.interfaces.Battle;
+import games.legendsofvalors.interfaces.LovGameState;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;

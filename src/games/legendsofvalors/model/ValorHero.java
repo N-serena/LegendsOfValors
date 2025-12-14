@@ -59,6 +59,7 @@ public class ValorHero extends Hero implements HeroObserver {
 
     @Override
     public void levelUp() {
+        applyStandardLevelUp();
         System.out.println(this.name + " has leveled up to " + this.level + " in Legends of Valors!");
     }
 

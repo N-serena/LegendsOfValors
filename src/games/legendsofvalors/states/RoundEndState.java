@@ -6,8 +6,7 @@ import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.factory.MonsterFactory;
 import games.legendsofvalors.model.world.LovBoard;
-import games.legendsofvalors.states.HeroTurnState;
-import games.legendsofvalors.states.LovGameState;
+import games.legendsofvalors.interfaces.LovGameState;
 
 import java.util.List;
 
