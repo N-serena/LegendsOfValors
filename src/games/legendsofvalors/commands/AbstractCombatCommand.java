@@ -3,6 +3,7 @@ package games.legendsofvalors.commands;
 import core.interfaces.FightStrategy;
 import core.model.Party;
 import games.legendsofvalors.controller.battle.LoVBattleProxy;
+import games.legendsofvalors.interfaces.LovCommand;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;

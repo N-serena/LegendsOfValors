@@ -4,6 +4,8 @@ import core.model.GameDatabase;
 import core.model.entity.Monster;
 import games.commoncontrollers.actions.Attack; // P2 Strategy
 import games.legendsofvalors.controller.LovGameController;
+import games.legendsofvalors.controller.battle.LoVBattleProxy;
+import games.legendsofvalors.interfaces.Battle;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;
@@ -15,6 +17,9 @@ public class MonsterTurnState implements LovGameState {
 
     @Override
     public void execute(LovGameController context) {
+
+        context.displayBoard();
+
         System.out.println("\n=== MONSTER TURN ===");
         LovBoard board = context.getBoard();
 
@@ -31,14 +36,12 @@ public class MonsterTurnState implements LovGameState {
                 System.out.println("⚠️ " + monster.getName() + " attacks " + target.getName() + "!");
 
                 // USE SHARED STRATEGY
-                Attack attackAI = new Attack();
-                // performFightAction(attacker, target, item) - Item is null for monsters
-                attackAI.performFightAction(monster, target, null);
+//                Attack attackAI = new Attack();
+//                // performFightAction(attacker, target, item) - Item is null for monsters
+//                attackAI.performFightAction(monster, target, null);
 
-                if (target.isFainted()) {
-                    System.out.println(target.getName() + " has fainted!");
-                    // Respawn logic is handled in RoundEndState or by P2's observer
-                }
+                Battle monsterFight = new LoVBattleProxy();
+                monsterFight.startBattle(monster, target, new Attack(), context.getParty(), board);
             }
         }
 

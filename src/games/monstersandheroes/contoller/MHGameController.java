@@ -8,8 +8,6 @@ import core.model.entity.Monster;
 import core.model.item.Item;
 import core.model.world.MarketTile;
 import core.util.GameConfig;
-import core.util.GameDataParser;
-import core.util.SoundPlayer;
 import games.commoncontrollers.*;
 
 import games.monstersandheroes.view.GameView;

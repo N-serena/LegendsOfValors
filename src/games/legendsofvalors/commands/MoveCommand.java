@@ -1,5 +1,6 @@
 package games.legendsofvalors.commands;
 
+import games.legendsofvalors.interfaces.LovCommand;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;

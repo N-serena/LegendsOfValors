@@ -1,4 +1,4 @@
-package games.legendsofvalors.commands;
+package games.legendsofvalors.interfaces;
 
 public interface LovCommand {
     /**

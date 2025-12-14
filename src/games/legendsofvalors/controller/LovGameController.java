@@ -76,7 +76,6 @@ public class LovGameController extends GameController implements GameEngine {
         this.currentState = new HeroTurnState();
 
         while (isRunning) {
-            System.out.println(board.renderColored());
             currentState.execute(this);
         }
     }
@@ -209,6 +208,12 @@ public class LovGameController extends GameController implements GameEngine {
         }
         return vh;
     }
+
+    public void displayBoard()
+    {
+        System.out.println(board.renderColored());
+    }
+
 
     public int getRoundNumber() { return roundNumber; }
     public void incrementRound() { this.roundNumber++; }

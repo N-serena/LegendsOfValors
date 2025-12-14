@@ -103,10 +103,8 @@ public class LoVBattle extends BattleController implements Battle {
                     System.out.println(attacker.getName() + " has defeated " + target.getName() + " !");
                     System.out.println();
 
-                    //remove hero from observer list for the current round
-                    partyController.removeObserver(target);
                     //hero respawns at their home nexus
-                    valorHeroController.respawnHero((ValorHero) attacker, board);
+                    valorHeroController.respawnHero(target, board);
 
                     System.out.println(target.getName() + " has respawned at their home nexus.");
                     System.out.println();
@@ -126,7 +124,8 @@ public class LoVBattle extends BattleController implements Battle {
     {
         for (Hero hero : party.getHeroes())
         {
-            partyController.addObserver((ValorHero) hero);
+            if (!hero.isFainted())
+            { partyController.addObserver((ValorHero) hero);}
         }
     }
 

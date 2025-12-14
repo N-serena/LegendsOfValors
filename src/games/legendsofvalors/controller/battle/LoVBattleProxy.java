@@ -4,8 +4,6 @@ import core.interfaces.FightStrategy;
 import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.LivingEntity;
-import core.model.item.Item;
-import core.model.item.Weapon;
 import core.interfaces.Board;
 import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.actions.Attack;
