@@ -241,17 +241,14 @@ public class LovBoard implements Board {
         }
         CellState targetCell = occupancy[targetRow][targetCol];
         if (targetCell.hasDifferentHero(hero)) {
-        //if (occupancy[targetRow][targetCol].hero != null && occupancy[targetRow][targetCol].hero != hero) {
             return false;
         }
-
         removeTerrainBuff(hero);
         occupancy[current.row][current.col].hero = null;
 
         if (tiles[targetRow][targetCol].isObstacle()) {
             tiles[targetRow][targetCol].clearObstacle();
         }
-
         targetCell.hero = hero;
         heroPositions.put(hero, new Position(targetRow, targetCol));
         applyTerrainEffects(hero, tiles[targetRow][targetCol]);

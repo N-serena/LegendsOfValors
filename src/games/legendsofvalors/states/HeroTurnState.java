@@ -99,54 +99,92 @@ public class HeroTurnState implements LovGameState {
         return null;
     }
 
-    // --- Refactored Handlers  ---
+    // --- Handlers ---
     private LovCommand handleTeleportInput(Scanner scanner, LovBoard board, ValorHero currentHero, List<ValorHero> party) {
         System.out.println("Select a hero to teleport to:");
 
-        // 1. List available targets
-        boolean hasTargets = false;
-        for (int i = 0; i < party.size(); i++) {
-            ValorHero h = party.get(i);
-            // Don't list yourself
+        // 1. SELECT TARGET HERO
+        List<ValorHero> validTargets = new java.util.ArrayList<>();
+        for (ValorHero h : party) {
             if (h != currentHero) {
-                System.out.println((i + 1) + ". " + h.getName() + " (Lane: " + h.getLane() + ")");
-                hasTargets = true;
+                System.out.println((validTargets.size() + 1) + ". " + h.getName() + " (Lane: " + h.getLane() + ")");
+                validTargets.add(h);
             }
         }
 
-        if (!hasTargets) {
-            System.out.println("No valid targets available.");
+        if (validTargets.isEmpty()) {
+            System.out.println("No targets available.");
             return null;
         }
 
-        System.out.print("Enter Hero ID (0 to cancel): ");
+        System.out.print("Enter Target ID (0 to cancel): ");
+        if (!scanner.hasNextInt()) { scanner.next(); return null; }
+        int targetIdx = scanner.nextInt();
+        if (targetIdx <= 0 || targetIdx > validTargets.size()) return null;
 
-        // 2. Get User Input & Validate
-        if (scanner.hasNextInt()) {
-            int targetIdx = scanner.nextInt();
+        ValorHero targetHero = validTargets.get(targetIdx - 1);
+        LovBoard.Position tPos = board.getHeroPosition(targetHero);
+        LovBoard.Position cPos = board.getHeroPosition(currentHero);
 
-            // Check Bounds
-            if (targetIdx > 0 && targetIdx <= party.size()) {
-                ValorHero targetHero = party.get(targetIdx - 1);
-
-                // 3. Create the Command
-                if (targetHero == currentHero) {
-                    System.out.println("You cannot teleport to yourself.");
-                    return null;
-                }
-
-                // Return the configured command for the main loop to execute
-                return new TeleportCommand(board, currentHero, targetHero);
-
-            } else if (targetIdx != 0) {
-                System.out.println("Invalid Hero ID.");
+        // Rule: Different Lane Check
+        if (Math.abs(cPos.col - tPos.col) <= 1) { // Simple col distance check for 'same lane' approximation or use strict lane check
+            // Better: Check if they share the same Lane object
+            if (board.getLaneForColumn(cPos.col) == board.getLaneForColumn(tPos.col)) {
+                System.out.println("Cannot teleport to the same lane.");
+                return null;
             }
-        } else {
-            scanner.next(); // Clear invalid input buffer
-            System.out.println("Invalid input.");
         }
 
-        return null; // Return null if cancelled or invalid
+        // 2. GENERATE CANDIDATES (Adjacent: Left, Right, Behind)
+        // "Cannot teleport to a space ahead" -> Row - 1 is forbidden.
+        List<LovBoard.Position> candidates = new java.util.ArrayList<>();
+        candidates.add(new LovBoard.Position(tPos.row, tPos.col - 1)); // Left
+        candidates.add(new LovBoard.Position(tPos.row, tPos.col + 1)); // Right
+        candidates.add(new LovBoard.Position(tPos.row + 1, tPos.col)); // Behind
+
+        // 3. FILTER CANDIDATES
+        List<LovBoard.Position> validMoves = new java.util.ArrayList<>();
+
+        for (LovBoard.Position p : candidates) {
+            // Check Bounds & Blocking (Hero/Wall)
+            if (board.isCellBlocked(p.row, p.col)) continue;
+
+            // Rule: "Cannot teleport behind a monster"
+            // We check if the destination row is "behind" (<=) the leading monster in that column
+            games.legendsofvalors.model.ValorMonster leader = board.getLeadingMonsterInLane(p.col);
+            if (leader != null) {
+                int monsterRow = board.getMonsterPosition(leader).row;
+                if (p.row <= monsterRow) {
+                    // Blocked by monster line
+                    continue;
+                }
+            }
+            validMoves.add(p);
+        }
+
+        // 4. USER PICK (If multiple)
+        if (validMoves.isEmpty()) {
+            System.out.println("Teleport Failed: No valid open spots around " + targetHero.getName());
+            return null;
+        }
+
+        LovBoard.Position finalDest;
+        if (validMoves.size() == 1) {
+            finalDest = validMoves.get(0);
+        } else {
+            System.out.println("Select destination:");
+            for (int i = 0; i < validMoves.size(); i++) {
+                LovBoard.Position p = validMoves.get(i);
+                String desc = (p.row > tPos.row) ? "Behind" : (p.col < tPos.col ? "Left" : "Right");
+                System.out.println((i + 1) + ". " + desc + " (" + p.row + ", " + p.col + ")");
+            }
+            System.out.print("> ");
+            if (!scanner.hasNextInt()) { scanner.next(); return null; }
+            int moveIdx = scanner.nextInt();
+            if (moveIdx < 1 || moveIdx > validMoves.size()) return null;
+            finalDest = validMoves.get(moveIdx - 1);
+        }
+        return new TeleportCommand(board, currentHero, finalDest.row, finalDest.col);
     }
     private LovCommand handleAttackInput(LovBoard board, ValorHero hero, LovGameController context) {
         ValorMonster target = findTarget(board, hero);
