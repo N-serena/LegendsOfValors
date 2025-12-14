@@ -37,7 +37,7 @@ public class LoVBattleProxy implements Battle {
     }
 
     @Override
-    public boolean startBattle(LivingEntity attacker, FightStrategy fightStrategy, Party party, Board board)
+    public boolean startBattle(LivingEntity attacker, LivingEntity target, FightStrategy fightStrategy, Party party, Board board)
     {
         boolean canBattleStart = false;
 
@@ -65,7 +65,7 @@ public class LoVBattleProxy implements Battle {
             battle = new LoVBattle();
         }
 
-        return battle.startBattle(attacker, fightStrategy, party, board);
+        return battle.startBattle(attacker, target, fightStrategy, party, board);
     }
 
     public boolean checkIfMonstersInRange(LivingEntity attacker, LovBoard board)
@@ -82,7 +82,7 @@ public class LoVBattleProxy implements Battle {
 
     public boolean checkIfHeroesInRange(LivingEntity attacker, LovBoard board)
     {
-        Set<ValorHero> heroes = board.getHeroesInRange((ValorMonster) attacker, 2);
+        Set<ValorHero> heroes = board.getHeroesInRange((ValorMonster) attacker, 1);
 
         if (heroes.isEmpty())
         {

@@ -31,6 +31,7 @@ import java.util.Random;
 public class LoVBattle extends BattleController implements Battle {
 
     private LivingEntity attacker;
+    private LivingEntity target;
     private LovBoard board;
     private PartyController partyController;
 
@@ -39,17 +40,19 @@ public class LoVBattle extends BattleController implements Battle {
     public LoVBattle() {
         valorHeroController = new LoVHeroController();
         partyController = new PartyController();
-        addHeroObservers(party);
     }
 
     @Override
-    public boolean startBattle(LivingEntity attacker, FightStrategy fightStrategy, Party party, Board board)
+    public boolean startBattle(LivingEntity attacker, LivingEntity target, FightStrategy fightStrategy, Party party, Board board)
     {
         //first method to be called from the game controller
         this.currentFightStrategy = fightStrategy;
         this.attacker = attacker;
+        this.target = target;
         this.board = (LovBoard) board;
         this.party = party;
+
+        addHeroObservers(party);
         boolean isActionDone = fight();
 
         return isActionDone;
@@ -63,12 +66,6 @@ public class LoVBattle extends BattleController implements Battle {
             if (attacker instanceof ValorHero) { //maybe a battleProxyclass to check if hero has the weapons and spells before creating battle
                 Weapon w = (Weapon) selectAttackItem(attacker);
 
-                //select monster target if there are many
-                ValorMonster target = selectMonsterTarget();
-
-                //for testing purposes
-                //target = LovGameController.monsters.get(0);
-
                 //pass control to fightStrategy to peform attack
                 currentFightStrategy.performFightAction(attacker, target, w);
 
@@ -81,7 +78,7 @@ public class LoVBattle extends BattleController implements Battle {
                     System.out.println();
 
                     //logic for removing monster
-                    board.removeMonster(target); //internally handles the logic for removing monster from the board
+                    board.removeMonster((ValorMonster) target); //internally handles the logic for removing monster from the board
 
                     //rewards for the party when a monster is defeated
                     partyController.defeatedMonster(target.getLevel());
@@ -120,9 +117,6 @@ public class LoVBattle extends BattleController implements Battle {
         else if (this.currentFightStrategy instanceof CastSpell)
         {
             Spell s = (Spell) selectSpellItem(attacker);
-            ValorMonster target = selectMonsterTarget();
-            //select monster target
-
             currentFightStrategy.performFightAction(attacker, target, s);
         }
         return true;
@@ -136,32 +130,32 @@ public class LoVBattle extends BattleController implements Battle {
         }
     }
 
-    public ValorMonster selectMonsterTarget()
-    {
-        int i = 0;
-        int choice;
-
-        List<ValorMonster> monsters = new ArrayList<>(board.getMonstersInRange((ValorHero) attacker, 4));
-
-        //only one monster
-        if (monsters.size() == 1)
-        {
-            return monsters.get(0);
-        }
-        //many monsters in range, give choice to user to select the target
-        else {
-            for (ValorMonster monster : monsters) {
-                System.out.println("[" + i + "] " + monster);
-                System.out.println();
-                System.out.println("Choose your target !");
-
-                choice = inputHandler.getIntegerInput(1, monsters.size());
-
-                return monsters.get(choice - 1);
-            }
-        }
-        return null;
-    }
+//    public ValorMonster selectMonsterTarget()
+//    {
+//        int i = 0;
+//        int choice;
+//
+//        List<ValorMonster> monsters = new ArrayList<>(board.getMonstersInRange((ValorHero) attacker, 4));
+//
+//        //only one monster
+//        if (monsters.size() == 1)
+//        {
+//            return monsters.get(0);
+//        }
+//        //many monsters in range, give choice to user to select the target
+//        else {
+//            for (ValorMonster monster : monsters) {
+//                System.out.println("[" + i + "] " + monster);
+//                System.out.println();
+//                System.out.println("Choose your target !");
+//
+//                choice = inputHandler.getIntegerInput(1, monsters.size());
+//
+//                return monsters.get(choice - 1);
+//            }
+//        }
+//        return null;
+//    }
 
     public ValorHero selectHeroTarget()
     {

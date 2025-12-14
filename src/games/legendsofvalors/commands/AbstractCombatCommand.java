@@ -34,7 +34,7 @@ public abstract class AbstractCombatCommand implements LovCommand {
         LoVBattleProxy proxy = new LoVBattleProxy();
 
         // 2. Start Battle using the specific Strategy
-        boolean battleSuccess = proxy.startBattle(hero, getStrategy(), party, board);
+        boolean battleSuccess = proxy.startBattle(hero, target, getStrategy(), party, board);
 
         // 3. Common Cleanup Logic
         if (target.isFainted()) {
