@@ -30,25 +30,7 @@ public class GameController {
         party = new Party();
         inventoryController = new InventoryController(scanner);
     }
-/*
-    protected void loadGameData() throws IOException {
-        //System.out.println("Loading game assets...");
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Warriors.txt", "Warrior"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Sorcerers.txt", "Sorcerer"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Paladins.txt", "Paladin"));
 
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Dragons.txt", "Dragon"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Exoskeletons.txt", "Exoskeleton"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Spirits.txt", "Spirit"));
-
-        allItems.addAll(GameDataParser.parseWeapons("data_files/Weaponry.txt"));
-        allItems.addAll(GameDataParser.parseArmor("data_files/Armory.txt"));
-        allItems.addAll(GameDataParser.parsePotions("data_files/Potions.txt"));
-        allItems.addAll(GameDataParser.parseSpells("data_files/IceSpells.txt", Spell.SpellType.ICE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", Spell.SpellType.FIRE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", Spell.SpellType.LIGHTNING));
-    }
-*/
     public void getComplimentaryWeapons()
     {
         int i = 0;
