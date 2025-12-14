@@ -17,6 +17,8 @@ public class HeroTurnState implements LovGameState {
     @Override
     public void execute(LovGameController context) {
         System.out.println("\n=== HERO TURN ===");
+        printRoundBanner(context);
+        displayStatus(context);
         LovBoard board = context.getBoard();
         Scanner scanner = context.getScanner();
 
@@ -75,7 +77,7 @@ public class HeroTurnState implements LovGameState {
         context.setState(new MonsterTurnState());
     }
 
-    // Helper to auto-target the nearest monster
+    // Helpers
     private ValorMonster findTarget(LovBoard board, ValorHero hero) {
         LovBoard.Position hPos = board.getHeroPosition(hero);
         for (int r = hPos.row - 1; r <= hPos.row + 1; r++) {
@@ -97,6 +99,95 @@ public class HeroTurnState implements LovGameState {
             }
         }
         return null;
+    }
+    private void printRoundBanner(LovGameController context) {
+        int currentRound = context.getRoundNumber();
+        int interval = games.legendsofvalors.util.GameConfig.DEFAULT_SPAWN_INTERVAL;
+
+        // Wave happens when (round % 8 == 0) at the END of the round.
+        // If round is 8, remainder is 0 -> Wave is imminent.
+        int remainder = currentRound % interval;
+        int roundsLeft = (remainder == 0) ? 0 : (interval - remainder);
+
+        System.out.println("\n" + games.monstersandheroes.view.Colors.YELLOW + "========================================");
+        System.out.println("             ROUND " + currentRound);
+
+        if (remainder == 0) {
+            System.out.println(games.monstersandheroes.view.Colors.RED + "   ⚠️  MONSTER WAVE SPAWNS THIS TURN!  ⚠️" + games.monstersandheroes.view.Colors.YELLOW);
+        } else {
+            System.out.println("   Next Monster Wave in: " + roundsLeft + " rounds");
+        }
+        System.out.println("========================================" + games.monstersandheroes.view.Colors.RESET);
+    }
+    private void displayStatus(LovGameController context) {
+        LovBoard board = context.getBoard();
+
+        // 1. HERO STATUS
+        System.out.println(games.monstersandheroes.view.Colors.CYAN + "--- HERO SQUAD ---" + games.monstersandheroes.view.Colors.RESET);
+        System.out.printf("%-15s | %-4s | %-6s | %-13s | %-3s | %-5s\n", "Name", "Lane", "Pos", "HP / MP", "Lvl", "Gold");
+        System.out.println("----------------------------------------------------------------");
+
+        for (ValorHero h : context.getHeroes()) {
+            LovBoard.Position pos = board.getHeroPosition(h);
+            String posStr = (pos != null) ? pos.row + "," + pos.col : "Dead";
+
+            // Calculate Lane dynamically based on column
+            String laneStr = "N/A";
+            if (pos != null) {
+                LovBoard.Lane lane = board.getLaneForColumn(pos.col);
+                if (lane != null) laneStr = lane.getName();
+            }
+
+            System.out.printf("%-15s | %-4s | %-6s | %-5.0f / %-5.0f | %-3d | %-5.0f\n",
+                    h.getName(),
+                    laneStr,
+                    posStr,
+                    h.getHp(), h.getMana(),
+                    h.getLevel(), h.getGold());
+        }
+        System.out.println("----------------------------------------------------------------");
+
+        // 2. MONSTER THREATS (Optional Requirement)
+        System.out.println(games.monstersandheroes.view.Colors.RED + "--- ENEMY THREATS ---" + games.monstersandheroes.view.Colors.RESET);
+
+        // Helper map to track closest monster in Top/Mid/Bot
+        java.util.Map<String, ValorMonster> closestThreats = new java.util.HashMap<>();
+        java.util.Map<String, Integer> minDistance = new java.util.HashMap<>();
+
+        // Scan all monsters
+        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
+            ValorMonster m = entry.getKey();
+            LovBoard.Position p = entry.getValue();
+
+            // Get Lane
+            LovBoard.Lane lane = board.getLaneForColumn(p.col);
+            if (lane == null) continue;
+
+            // Calculate Distance to Hero Nexus (Row 7)
+            int dist = 7 - p.row;
+
+            // Check if this is the closest one we've seen in this lane
+            if (!minDistance.containsKey(lane.getName()) || dist < minDistance.get(lane.getName())) {
+                minDistance.put(lane.getName(), dist);
+                closestThreats.put(lane.getName(), m);
+            }
+        }
+
+        if (closestThreats.isEmpty()) {
+            System.out.println("No monsters on the board.");
+        } else {
+            System.out.printf("%-5s | %-15s | %-5s | %-6s\n", "Lane", "Closest Enemy", "HP", "Dist");
+            for (String lane : new String[]{"Top", "Mid", "Bot"}) {
+                if (closestThreats.containsKey(lane)) {
+                    ValorMonster m = closestThreats.get(lane);
+                    System.out.printf("%-5s | %-15s | %-5.0f | %-6d\n",
+                            lane, m.getName(), m.getHp(), minDistance.get(lane));
+                } else {
+                    System.out.printf("%-5s | %-15s | %-5s | %-6s\n", lane, "Clear", "-", "-");
+                }
+            }
+        }
+        System.out.println("----------------------------------------------------------------\n");
     }
 
     // --- Handlers ---

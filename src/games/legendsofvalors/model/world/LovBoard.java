@@ -509,6 +509,11 @@ public class LovBoard implements Board {
         return monsterPositions.get(monster);
     }
 
+    // Returns the full map of monster positions (Needed for C7.2 Status Panel)
+    public Map<ValorMonster, Position> getMonsterPositions() {
+        return monsterPositions;
+    }
+
     // Exposes the board tile grid for read-only inspection.
     public LovTile[][] getTiles() {
         return tiles;
