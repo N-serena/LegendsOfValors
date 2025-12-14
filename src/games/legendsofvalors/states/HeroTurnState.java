@@ -20,8 +20,6 @@ public class HeroTurnState implements LovGameState {
         LovBoard board = context.getBoard();
         Scanner scanner = context.getScanner();
 
-        // 1. Iterate through all heroes in the party (Assuming context has access to party list)
-        // For this example, we iterate through the heroes on the board or a list in Context
         for (ValorHero hero : context.getHeroes()) {
             if (hero.isFainted()) {
                 System.out.println(hero.getName() + " is fainted and cannot act.");
@@ -32,45 +30,48 @@ public class HeroTurnState implements LovGameState {
             while (!turnComplete) {
                 System.out.println(board.renderColored());
                 System.out.println("\nAction for " + hero.getName() + " (" + hero.getLane() + " Lane):");
-                System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [C] Cast Spell | [R] Recall | [M] Market | [I] Info/Equip | [Q] Quit");
+                System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [C] Cast Spell | [R] Recall");
+                System.out.println("[M] Market | [I] Info | [E] Equip/Item | [Q] Quit");
                 System.out.print("> ");
                 String input = scanner.next().toUpperCase();
 
                 LovCommand command = null;
 
                 switch (input) {
-                    // Movement Commands
-                    case "W": command = new MoveCommand(board, hero, -1, 0); break; // North
-                    case "A": command = new MoveCommand(board, hero, 0, -1); break; // West
-                    case "S": command = new MoveCommand(board, hero, 1, 0); break;  // South
-                    case "D": command = new MoveCommand(board, hero, 0, 1); break;  // East
-                    //Action Commands
-                    case "M": handleMarketInput(scanner, board, hero, context); break;
+                    // Movement
+                    case "W": command = new MoveCommand(board, hero, -1, 0); break;
+                    case "A": command = new MoveCommand(board, hero, 0, -1); break;
+                    case "S": command = new MoveCommand(board, hero, 1, 0); break;
+                    case "D": command = new MoveCommand(board, hero, 0, 1); break;
+
+                    // Actions
                     case "T": command = handleTeleportInput(scanner, board, hero, context.getHeroes()); break;
                     case "R": command = new RecallCommand(board, hero); break;
                     case "K": command = handleAttackInput(board, hero, context); break;
                     case "C": command = handleSpellInput(board, hero, context); break;
-                    case "I": handleInfoInput(hero); break;
+                    case "M": handleMarketInput(scanner, board, hero, context); break;
+
+                    // SEPARATED INFO & EQUIP
+                    case "I": handleInfoInput(hero); break; // Just Stats
+                    case "E": handleEquipInput(hero, context); break; // Equip & Potions
+
                     case "Q": System.exit(0); break;
                     default: System.out.println("Invalid command.");
                 }
 
-                // Execute Command
                 if (command != null) {
                     if (command.execute()) {
-                        turnComplete = true; // Action successful, next hero
+                        turnComplete = true;
                     }
                 }
             }
 
-            // Check Win Condition after every move [cite: 131]
+            // Win Condition
             if (board.getHeroPosition(hero).row == 0) {
                 System.out.println("VICTORY! " + hero.getName() + " reached the Nexus!");
                 System.exit(0);
             }
         }
-
-        // State Transition: Heroes are done -> Monsters Turn
         context.setState(new MonsterTurnState());
     }
 
@@ -196,13 +197,33 @@ public class HeroTurnState implements LovGameState {
             System.out.println("You must be at the Nexus to shop!");
         }
     }
+    private void handleEquipInput(ValorHero hero, LovGameController context) {
+        Scanner scanner = context.getScanner();
+        System.out.println("\n--- INVENTORY ACTION ---");
+        System.out.println("1. Equip Weapon/Armor");
+        System.out.println("2. Use Potion");
+        System.out.println("0. Back");
+        System.out.print("> ");
+
+        if (scanner.hasNextInt()) {
+            int choice = scanner.nextInt();
+            if (choice == 1) {
+                // Delegate to P2's Inventory Controller
+                context.getInventoryController().openEquipMenu(hero);
+            } else if (choice == 2) {
+                context.getInventoryController().openPotionMenu(hero);
+            }
+        } else {
+            scanner.next(); // Clear invalid input
+        }
+    }
     private void handleInfoInput(ValorHero hero) {
         System.out.println("\nStats for " + hero.getName());
         System.out.println("HP: " + hero.getHp() + " | Mana: " + hero.getMana());
         System.out.println("Str: " + hero.getStrength() + " | Dex: " + hero.getDexterity() + " | Agi: " + hero.getAgility());
         System.out.println("Gold: " + hero.getGold() + " | XP: " + hero.getExperience());
 
-        // FIX: Handle List<Weapon> instead of single Weapon
+        // Handle List<Weapon> instead of single Weapon
         System.out.print("Equipped Weapons: ");
         java.util.List<core.model.item.Weapon> weapons = hero.getEquippedWeapon();
 
