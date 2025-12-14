@@ -16,18 +16,15 @@ public class HeroTurnState implements LovGameState {
 
     @Override
     public void execute(LovGameController context) {
-        System.out.println("\n=== HERO TURN ===");
         printRoundBanner(context);
         displayStatus(context);
         LovBoard board = context.getBoard();
         Scanner scanner = context.getScanner();
-
         for (ValorHero hero : context.getHeroes()) {
             if (hero.isFainted()) {
                 System.out.println(hero.getName() + " is fainted and cannot act.");
                 continue;
             }
-
             boolean turnComplete = false;
             while (!turnComplete) {
                 System.out.println(board.renderColored());

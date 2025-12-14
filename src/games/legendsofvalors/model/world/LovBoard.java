@@ -605,7 +605,7 @@ public class LovBoard implements Board {
         }
         String background = determineBackground(row, col);
         String foreground = determineForeground(background);
-        return background + foreground + pad(content) + Colors.RESET;
+        return background + foreground + Colors.BOLD + pad(content) + Colors.RESET;
     }
 
     // Determines the raw symbol(s) that should appear in a cell.

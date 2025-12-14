@@ -5,6 +5,7 @@ import core.model.GameDatabase;
 import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.Monster;
+import core.util.Colors;
 import games.commoncontrollers.GameController;
 import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.MarketController;
@@ -44,16 +45,35 @@ public class LovGameController extends GameController implements GameEngine {
 
     @Override
     public void startGame() {
-        System.out.println("--- LEGENDS OF VALOR ---");
-        // 1. Load Data
-        GameDatabase.getInstance().loadData();
-        // 2. Setup Board & Party
-        setupGame();
-        // 3. Start State Loop
-        this.currentState = new HeroTurnState();
+        // 1. Clear Screen & Show Title
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
 
-        System.out.println("Press 'L' to view map instructions/legend.");
-        promptLegend();
+        System.out.println(Colors.PURPLE + "========================================");
+        System.out.println("       L E G E N D S   O F   V A L O R       ");
+        System.out.println("========================================" + Colors.RESET);
+
+        System.out.println("Loading game assets...");
+        GameDatabase.getInstance().loadData();
+
+        // 2. Show Rules/Legend IMMEDIATELY (No prompt)
+        System.out.println("\n" + board.getLegendText());
+
+        System.out.println(Colors.YELLOW + "\n--- MISSION ---" + Colors.RESET);
+        System.out.println("1. Move your heroes to the Monster Nexus (Row 0) to win.");
+        System.out.println("2. Defeat monsters to gain XP and Gold.");
+        System.out.println("3. Buy better gear at your Nexus (Row 7).");
+        System.out.println("4. Do not let monsters reach your Nexus!");
+        //System.out.println(board.renderColored());
+
+        // 3. Wait for Enter
+        System.out.println(Colors.GREEN + "\nPress ENTER to start the battle..." + Colors.RESET);
+        //scanner.nextLine(); // Consume previous newline if any
+        if (scanner.hasNextLine()) scanner.nextLine(); // Wait for actual enter
+
+        // 4. Setup & Start Loop
+        setupGame();
+        this.currentState = new HeroTurnState();
 
         while (isRunning) {
             System.out.println(board.renderColored());
@@ -93,7 +113,7 @@ public class LovGameController extends GameController implements GameEngine {
 
     private void spawnMonster(Monster template, int r, int c, String lane) {
         ValorMonster vm = new ValorMonster(template, lane);
-        vm.scaleStats(1); // Scale to level 1
+        vm.scaleStats(1);
         board.placeMonster(vm, r, c);
     }
 
@@ -103,20 +123,13 @@ public class LovGameController extends GameController implements GameEngine {
         return "Bot";
     }
 
-    private void promptLegend() {
-        String input = scanner.nextLine();
-        if (input != null && input.trim().equalsIgnoreCase("L")) {
-            System.out.println(board.getLegendText());
-        }
-    }
-
     // --- Getters for States ---
     public void setState(LovGameState newState) { this.currentState = newState; }
     public LovBoard getBoard() { return board; }
     public Scanner getScanner() { return scanner; }
     public Party getParty() { return party; }
 
-    // Helper: Converts Party to List<ValorHero> for Logic compatibility
+    // Helper
     public List<ValorHero> getHeroes() {
         List<ValorHero> vh = new ArrayList<>();
         for (Hero h : party.getHeroes()) {
@@ -127,8 +140,6 @@ public class LovGameController extends GameController implements GameEngine {
 
     public int getRoundNumber() { return roundNumber; }
     public void incrementRound() { this.roundNumber++; }
-
-    // Getters for Controllers (needed for Market/Inventory states)
     public InventoryController getInventoryController() { return inventoryController; }
     public MarketController getMarketController() { return marketController; }
 }
