@@ -63,7 +63,6 @@ public class MHGameController extends GameController implements GameEngine {
     @Override
     public void startGame() {
         // 1. Visuals
-        //view.printTitleScreen();
         view.printIntroStory();
         view.printRules();
         System.out.println("\nPress ENTER to begin your adventure...");

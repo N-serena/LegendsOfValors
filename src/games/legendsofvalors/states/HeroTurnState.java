@@ -77,22 +77,15 @@ public class HeroTurnState implements LovGameState {
     // Helpers
     private ValorMonster findTarget(LovBoard board, ValorHero hero) {
         LovBoard.Position hPos = board.getHeroPosition(hero);
-        for (int r = hPos.row - 1; r <= hPos.row + 1; r++) {
-            for (int c = hPos.col - 1; c <= hPos.col + 1; c++) {
-                // Skip the hero's own center tile (optional, but good practice)
-                if (r == hPos.row && c == hPos.col) continue;
 
-                // We need to find if a monster is at (r, c).
-                // Since LovBoard doesn't have 'getMonsterAt', we iterate the known monsters.
-                // (Optimized: You should add getMonsterAt to LovBoard, but this works for P3 isolation)
-                for (core.model.entity.Monster m : core.model.GameDatabase.getInstance().getAllMonsters()) {
-                    if (m instanceof ValorMonster) {
-                        LovBoard.Position mPos = board.getMonsterPosition((ValorMonster) m);
-                        if (mPos != null && mPos.row == r && mPos.col == c) {
-                            return (ValorMonster) m;
-                        }
-                    }
-                }
+        // Iterate through ACTIVE monsters on the board, not the database templates
+        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
+            LovBoard.Position mPos = entry.getValue();
+
+            // Check for adjacency (3x3 grid around hero)
+            // Logic: Row difference <= 1 AND Col difference <= 1
+            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
+                return entry.getKey(); // Found a target!
             }
         }
         return null;
