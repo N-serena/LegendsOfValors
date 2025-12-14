@@ -1,5 +1,6 @@
 package games.commoncontrollers;
 
+import core.model.GameDatabase;
 import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.Monster;
@@ -33,20 +34,41 @@ public class GameController {
 
     protected void loadGameData() throws IOException {
         //System.out.println("Loading game assets...");
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Warriors.txt", "Warrior"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Sorcerers.txt", "Sorcerer"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Paladins.txt", "Paladin"));
+        // Delegate to Singleton
+        GameDatabase db = GameDatabase.getInstance();
+        db.loadData();
 
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Dragons.txt", "Dragon"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Exoskeletons.txt", "Exoskeleton"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Spirits.txt", "Spirit"));
+        // Reference the loaded lists
+        this.allHeroes = db.getAllHeroes();
+        this.allMonsters = db.getAllMonsters();
+        this.allItems = db.getAllItems();
+    }
 
-        allItems.addAll(GameDataParser.parseWeapons("data_files/Weaponry.txt"));
-        allItems.addAll(GameDataParser.parseArmor("data_files/Armory.txt"));
-        allItems.addAll(GameDataParser.parsePotions("data_files/Potions.txt"));
-        allItems.addAll(GameDataParser.parseSpells("data_files/IceSpells.txt", Spell.SpellType.ICE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", Spell.SpellType.FIRE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", Spell.SpellType.LIGHTNING));
+    protected void selectParty() {
+        System.out.println("\n--- HERO SELECTION ---");
+        int count = 0;
+        while (count < 1 || count > 3) {
+            System.out.print("Enter party size (1-3): ");
+            if (scanner.hasNextInt()) count = scanner.nextInt();
+            else scanner.next();
+        }
+
+        // Display Options
+        System.out.printf("%-4s %-20s %-10s\n", "ID", "Name", "Type");
+        for (int i = 0; i < allHeroes.size(); i++) {
+            System.out.printf("%-4d %-20s %-10s\n", (i+1), allHeroes.get(i).getName(), allHeroes.get(i).getClass().getSimpleName());
+        }
+
+        for (int i = 1; i <= count; i++) {
+            int choice = -1;
+            while (choice < 1 || choice > allHeroes.size()) {
+                System.out.print("Select Hero " + i + ": ");
+                if (scanner.hasNextInt()) choice = scanner.nextInt();
+                else scanner.next();
+            }
+            party.addHero(allHeroes.get(choice - 1));
+        }
+        System.out.println("Party assembled!");
     }
 
     public void getComplimentaryWeapons()
@@ -71,7 +93,7 @@ public class GameController {
     {
         List<Item> initialWeapons = new ArrayList<>();
         try {
-            initialWeapons = GameDataParser.parseWeapons("datafiles/Initial.txt");
+            initialWeapons = GameDataParser.parseWeapons("data_files/Initial.txt");
         }
         catch(IOException IO)
         {

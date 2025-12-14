@@ -6,6 +6,7 @@ import core.model.item.spell.FireSpell;
 import core.model.item.spell.IceSpell;
 import core.model.item.spell.LightningSpell;
 import core.model.item.spell.Spell;
+import games.legendsofvalors.model.ValorHero;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
