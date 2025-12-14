@@ -94,20 +94,26 @@ public class HeroTurnState implements LovGameState {
     private ValorMonster findTarget(LovBoard board, ValorHero hero) {
         LovBoard.Position hPos = board.getHeroPosition(hero);
 
-        List<ValorMonster> potentialTargets = new ArrayList<>(board.getMonstersInRange(hero, 1));
+        //List<ValorMonster> potentialTargets = new ArrayList<>(board.getMonstersInRange(hero, 1));
+        List<ValorMonster> potentialTargets = new ArrayList<>();
 
 
-//        // Iterate through ACTIVE monsters on the board, not the database templates
-//        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
-//            LovBoard.Position mPos = entry.getValue();
-//
-//            // Check for adjacency (3x3 grid around hero)
-//            // Logic: Row difference <= 1 AND Col difference <= 1
-//            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
-//                //return entry.getKey(); // Found a target!
-//                potentialTargets.add(entry.getKey());
-//            }
-//        }
+        // Iterate through ACTIVE monsters on the board, not the database templates
+        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
+            LovBoard.Position mPos = entry.getValue();
+
+            // Check for adjacency (3x3 grid around hero)
+            // Logic: Row difference <= 1 AND Col difference <= 1
+            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
+                //return entry.getKey(); // Found a target!
+                potentialTargets.add(entry.getKey());
+            }
+        }
+
+        if (potentialTargets.size() == 0)
+        {
+            return null;
+        }
 
         if (potentialTargets.size() == 1)
         {
@@ -116,20 +122,20 @@ public class HeroTurnState implements LovGameState {
         }
         else {
             //else give the choice to hero to select which monster to attack
-            int i = 0;
+            int i = 1;
             int choice;
 
             for (ValorMonster monster : potentialTargets) {
                 System.out.println("[" + i + "] " + monster);
-                System.out.println();
-                System.out.println("Choose your target !");
-
-                choice = inputHandler.getIntegerInput(1, potentialTargets.size());
-
-                return potentialTargets.get(choice - 1);
+                i++;
             }
+            System.out.println();
+            System.out.println("Choose your target !");
+
+            choice = inputHandler.getIntegerInput(1, potentialTargets.size());
+
+            return potentialTargets.get(choice - 1);
         }
-        return null;
     }
     private void printRoundBanner(LovGameController context) {
         int currentRound = context.getRoundNumber();
