@@ -6,7 +6,6 @@ import core.model.entity.Hero;
 import core.model.entity.Monster;
 import core.model.item.Item;
 import core.model.item.Weapon;
-import core.model.item.spell.Spell;
 import core.util.GameDataParser;
 
 import java.io.IOException;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class GameController {
+public abstract class GameController {
 
     protected List<Hero> allHeroes;
     protected List<Item> allItems;
@@ -22,6 +21,7 @@ public class GameController {
     protected Party party;
 
     Scanner scanner;
+    InputHandler inputHandler;
     protected InventoryController inventoryController;
 
     public GameController() {
@@ -30,10 +30,11 @@ public class GameController {
         allMonsters = new ArrayList<>();
         party = new Party();
         inventoryController = new InventoryController(scanner);
+        inputHandler = new InputHandler();
     }
 
     protected void loadGameData() throws IOException {
-        //System.out.println("Loading game assets...");
+        System.out.println("Loading game assets...");
         // Delegate to Singleton
         GameDatabase db = GameDatabase.getInstance();
         db.loadData();
@@ -47,25 +48,22 @@ public class GameController {
     protected void selectParty() {
         System.out.println("\n--- HERO SELECTION ---");
         int count = 0;
-        while (count < 1 || count > 3) {
-            System.out.print("Enter party size (1-3): ");
-            if (scanner.hasNextInt()) count = scanner.nextInt();
-            else scanner.next();
-        }
+
+        System.out.print("Enter party size (1-3): ");
+        count = inputHandler.getIntegerInput(1, 3);
 
         // Display Options
         System.out.printf("%-4s %-20s %-10s\n", "ID", "Name", "Type");
-        for (int i = 0; i < allHeroes.size(); i++) {
+
+    for (int i = 0; i < allHeroes.size(); i++) {
             System.out.printf("%-4d %-20s %-10s\n", (i+1), allHeroes.get(i).getName(), allHeroes.get(i).getClass().getSimpleName());
         }
 
         for (int i = 1; i <= count; i++) {
             int choice = -1;
-            while (choice < 1 || choice > allHeroes.size()) {
-                System.out.print("Select Hero " + i + ": ");
-                if (scanner.hasNextInt()) choice = scanner.nextInt();
-                else scanner.next();
-            }
+
+            choice = inputHandler.getIntegerInput(1, allHeroes.size());
+
             party.addHero(allHeroes.get(choice - 1));
         }
         System.out.println("Party assembled!");

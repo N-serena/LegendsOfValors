@@ -65,7 +65,7 @@ public class HeroTurnState implements LovGameState {
                     case "I": handleInfoInput(hero); break; // Just Stats
                     case "E": handleEquipInput(hero, context); break; // Equip & Potions
 
-                    case "Q": System.exit(0); break;
+                    case "Q": context.isRunning = false; turnComplete = true; break;
                     default: System.out.println("Invalid command.");
                 }
 
@@ -80,6 +80,10 @@ public class HeroTurnState implements LovGameState {
             if (board.getHeroPosition(hero).row == 0) {
                 System.out.println("VICTORY! " + hero.getName() + " reached the Nexus!");
                 System.exit(0);
+            }
+            if (!context.isRunning)
+            {
+                break;
             }
         }
         context.setState(new MonsterTurnState());

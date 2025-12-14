@@ -9,7 +9,6 @@ import core.util.Colors;
 import games.commoncontrollers.GameController;
 import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.MarketController;
-import games.commoncontrollers.PartyController;
 import games.legendsofvalors.states.HeroTurnState;
 import games.legendsofvalors.interfaces.LovGameState;
 import games.legendsofvalors.model.ValorHero;
@@ -26,11 +25,10 @@ public class LovGameController extends GameController implements GameEngine {
     private Scanner scanner;
     private LovGameState currentState;
     private int roundNumber = 1;
-    private boolean isRunning = true;
+    public boolean isRunning = true;
 
     //Controllers
     private MarketController marketController;
-    private PartyController partyController;
 
     public LovGameController() {
         super(); // Initializes 'party', 'allHeroes', etc. from parent
@@ -40,7 +38,6 @@ public class LovGameController extends GameController implements GameEngine {
         //Initialize controllers
         this.inventoryController = new InventoryController(scanner);
         this.marketController = new MarketController(scanner, inventoryController);
-        this.partyController = new PartyController();
     }
 
     @Override
@@ -68,7 +65,6 @@ public class LovGameController extends GameController implements GameEngine {
 
         // 3. Wait for Enter
         System.out.println(Colors.GREEN + "\nPress ENTER to start the battle..." + Colors.RESET);
-        //scanner.nextLine(); // Consume previous newline if any
         if (scanner.hasNextLine()) scanner.nextLine(); // Wait for actual enter
 
         // 4. Setup & Start Loop

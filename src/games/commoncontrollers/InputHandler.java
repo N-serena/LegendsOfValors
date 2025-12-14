@@ -16,7 +16,7 @@ public class InputHandler {
 
     public String getInput() {
         System.out.print("> ");
-        return scanner.next();
+        return scanner.next().toUpperCase();
     }
 
     /**

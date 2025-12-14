@@ -32,11 +32,6 @@ public class MHGameController extends GameController implements GameEngine {
     private Board board;
     private GameView view;
 
-    // Data Pools
-    private List<Hero> allHeroes;
-    private List<Item> allItems;
-    private List<Monster> allMonsters;
-
     // Sub-Controllers
     private MarketController marketController;
     private InventoryController inventoryController;
@@ -81,18 +76,6 @@ public class MHGameController extends GameController implements GameEngine {
         // 3. Setup
         selectParty();
         gameLoop();
-    }
-
-    protected void loadGameData() throws IOException {
-        System.out.println("Loading game assets...");
-        // Delegate to Singleton
-        GameDatabase db = GameDatabase.getInstance();
-        db.loadData();
-
-        // Reference the loaded lists
-        this.allHeroes = db.getAllHeroes();
-        this.allMonsters = db.getAllMonsters();
-        this.allItems = db.getAllItems();
     }
 
     private void gameLoop() {
