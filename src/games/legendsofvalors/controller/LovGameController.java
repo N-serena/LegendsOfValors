@@ -6,6 +6,7 @@ import core.model.Party;
 import core.model.entity.Hero;
 import core.model.entity.Monster;
 import core.util.Colors;
+import core.util.SoundPlayer;
 import games.commoncontrollers.GameController;
 import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.MarketController;
@@ -45,6 +46,9 @@ public class LovGameController extends GameController implements GameEngine {
 
     @Override
     public void startGame() {
+        // 0. play intro music
+        //SoundPlayer.playBackgroundMusic("soundfiles/themes.wav");
+
         // 1. Clear Screen & Show Title
         System.out.print("\033[H\033[2J");
         System.out.flush();

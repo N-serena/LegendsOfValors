@@ -6,13 +6,6 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.File;
 
-/**
- * Utility to play background music safely.
- * Runs in a separate thread to avoid blocking the game loop.
- * * Fails silently if audio file is missing or errors occur, ensuring game stability.
- * * @author Serena N.
- * @version 1.0
- */
 public class SoundPlayer {
 
     private static Clip clip;
@@ -21,8 +14,12 @@ public class SoundPlayer {
         new Thread(() -> {
             try {
                 File audioFile = new File(filePath);
+
+                // 1. Debug: Print the path being searched
+                //System.out.println("[Sound] Looking for file at: " + audioFile.getAbsolutePath());
+
                 if (!audioFile.exists()) {
-                    // Fail silently so the game doesn't crash on the professor's computer
+                    System.err.println("[Sound] Error: File not found!");
                     return;
                 }
 
@@ -30,15 +27,16 @@ public class SoundPlayer {
                 clip = AudioSystem.getClip();
                 clip.open(audioStream);
 
-                // Optional: Lower volume by 10 decibels so it's background, not foreground
+                // Lower volume
                 FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                 gainControl.setValue(-10.0f);
 
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
                 clip.start();
-
             } catch (Exception e) {
-                // Ignore audio errors (Game must continue even if sound fails)
+                // 2. Debug: Print the actual error
+                System.err.println("[Sound] Critical Error:");
+                e.printStackTrace();
             }
         }).start();
     }

@@ -1,11 +1,14 @@
 import java.util.Scanner;
 import core.interfaces.GameEngine;
+import core.util.SoundPlayer;
 import games.legendsofvalors.controller.LovGameController;
 import games.monstersandheroes.contoller.MHGameController;
 
 public class GameLauncher {
 
     public void launch() {
+        SoundPlayer.playBackgroundMusic("soundfiles/themes.wav");
+
         // Clear screen (simulated)
         System.out.print("\033[H\033[2J");
         System.out.flush();

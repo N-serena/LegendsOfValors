@@ -63,9 +63,6 @@ public class MHGameController extends GameController implements GameEngine {
 
     @Override
     public void startGame() {
-        //0. Start audio (optional)
-        SoundPlayer.playBackgroundMusic("theme.wav");
-
         // 1. Visuals
         view.printTitleScreen();
         view.printIntroStory();

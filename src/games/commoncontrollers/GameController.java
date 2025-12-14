@@ -30,9 +30,9 @@ public class GameController {
         party = new Party();
         inventoryController = new InventoryController(scanner);
     }
-
+/*
     protected void loadGameData() throws IOException {
-        System.out.println("Loading game assets...");
+        //System.out.println("Loading game assets...");
         allHeroes.addAll(GameDataParser.parseHeroes("data_files/Warriors.txt", "Warrior"));
         allHeroes.addAll(GameDataParser.parseHeroes("data_files/Sorcerers.txt", "Sorcerer"));
         allHeroes.addAll(GameDataParser.parseHeroes("data_files/Paladins.txt", "Paladin"));
@@ -48,7 +48,7 @@ public class GameController {
         allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", Spell.SpellType.FIRE));
         allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", Spell.SpellType.LIGHTNING));
     }
-
+*/
     public void getComplimentaryWeapons()
     {
         int i = 0;
