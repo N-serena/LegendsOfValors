@@ -41,7 +41,7 @@ public class GameDatabase {
         if (!allHeroes.isEmpty()) return; // Prevent double loading
 
         try {
-            System.out.println("Loading game assets from Singleton Database...");
+            //System.out.println("Loading game assets from Singleton Database...");
             // Heroes
             allHeroes.addAll(GameDataParser.parseHeroes("data_files/Warriors.txt", "Warrior"));
             allHeroes.addAll(GameDataParser.parseHeroes("data_files/Sorcerers.txt", "Sorcerer"));

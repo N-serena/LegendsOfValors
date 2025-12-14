@@ -53,7 +53,7 @@ public class LovGameController extends GameController implements GameEngine {
         System.out.println("       L E G E N D S   O F   V A L O R       ");
         System.out.println("========================================" + Colors.RESET);
 
-        System.out.println("Loading game assets...");
+        //System.out.println("Loading game assets...");
         GameDatabase.getInstance().loadData();
 
         // 2. Show Rules/Legend IMMEDIATELY (No prompt)
