@@ -50,6 +50,7 @@ public class LovBoard implements Board {
     private int monsterLabelCounter;
     private int spawnInterval;
     private int roundsSinceLastSpawn;
+    private int numMonsters;
 
     // Creates a board with a default random generator for terrain.
     public LovBoard() {
@@ -399,6 +400,7 @@ public class LovBoard implements Board {
             monster.scaleStats(highestHeroLevel);
             if (placeMonster(monster, 0, spawnColumn)) {
                 spawned.add(monster);
+                numMonsters++;
             }
         }
         return spawned;
@@ -414,6 +416,7 @@ public class LovBoard implements Board {
         CellState cell = occupancy[position.row][position.col];
         if (cell != null) {
             cell.monster = null;
+            numMonsters--;
         }
     }
 
@@ -506,14 +509,17 @@ public class LovBoard implements Board {
             case BUSH:
                 activeHeroBuffs.put(hero, TerrainBuffRecord.dexterity(hero.getDexterity()));
                 hero.setDexterity(hero.getDexterity() * GameConfig.BUFF_MULTIPLIER);
+                System.out.println(Colors.BG_BRIGHT_GREEN + Colors.WHITE +  "Moved to a BUSH tile : " + hero.getName() + " received " + GameConfig.PERC_INC + "% increase in " + GameConfig.DEXTERITY + Colors.RESET);
                 break;
             case CAVE:
                 activeHeroBuffs.put(hero, TerrainBuffRecord.agility(hero.getAgility()));
                 hero.setAgility(hero.getAgility() * GameConfig.BUFF_MULTIPLIER);
+                System.out.println(Colors.BG_BRIGHT_PURPLE + Colors.WHITE + "Moved to a CAVE tile : " + hero.getName() + " received " + GameConfig.PERC_INC + "% increase in " + GameConfig.AGILITY + Colors.RESET);
                 break;
             case KOULOU:
                 activeHeroBuffs.put(hero, TerrainBuffRecord.strength(hero.getStrength()));
                 hero.setStrength(hero.getStrength() * GameConfig.BUFF_MULTIPLIER);
+                System.out.println(Colors.BG_BRIGHT_WHITE + Colors.BLACK + "Moved to a KOULOU tile : " + hero.getName() + " received " + GameConfig.PERC_INC + "% increase in " + GameConfig.STRENGTH + Colors.RESET);
                 break;
             default:
                 // Plain/Obstacle do not grant buffs
@@ -673,6 +679,9 @@ public class LovBoard implements Board {
         monsterPositions.put(monster, new Position(targetRow, targetCol));
         return true;
     }
+
+    public int getNumMonsters()
+    { return numMonsters;}
 
     public static class CellState {
         private ValorHero hero;

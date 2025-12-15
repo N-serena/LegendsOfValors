@@ -2,6 +2,7 @@ package games.legendsofvalors.states;
 
 import core.model.GameDatabase;
 import core.model.entity.Monster;
+import games.commoncontrollers.InputHandler;
 import games.commoncontrollers.actions.Attack; // P2 Strategy
 import games.legendsofvalors.controller.LovGameController;
 import games.legendsofvalors.controller.battle.LoVBattleProxy;
@@ -28,7 +29,7 @@ public class MonsterTurnState implements LovGameState {
         Map<ValorMonster, Set<ValorHero>> attackers = board.getMonstersReadyToAttack(1);
 
         if (attackers.isEmpty()) {
-            System.out.println("No monsters are in range to attack.");
+            System.out.println("None of the monsters are in range to attack.");
         } else {
             for (Map.Entry<ValorMonster, Set<ValorHero>> entry : attackers.entrySet()) {
                 ValorMonster monster = entry.getKey();

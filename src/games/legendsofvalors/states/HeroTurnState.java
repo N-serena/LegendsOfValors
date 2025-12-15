@@ -1,5 +1,8 @@
 package games.legendsofvalors.states;
 
+import core.model.item.Item;
+import core.model.item.Potion;
+import core.model.item.spell.Spell;
 import games.commoncontrollers.InputHandler;
 import games.legendsofvalors.interfaces.LovCommand;
 import games.legendsofvalors.commands.MoveCommand;
@@ -10,11 +13,11 @@ import games.legendsofvalors.interfaces.LovGameState;
 import games.legendsofvalors.model.ValorHero;
 import games.legendsofvalors.model.ValorMonster;
 import games.legendsofvalors.model.world.LovBoard;
+import games.monstersandheroes.view.Colors;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 import static java.lang.Math.ceil;
 
@@ -34,6 +37,8 @@ public class HeroTurnState implements LovGameState {
         displayStatus(context);
         LovBoard board = context.getBoard();
         Scanner scanner = context.getScanner();
+        int i = 1;
+
         for (ValorHero hero : context.getHeroes()) {
             if (hero.isFainted()) {
                 System.out.println(hero.getName() + " is fainted and cannot act.");
@@ -42,7 +47,9 @@ public class HeroTurnState implements LovGameState {
             boolean turnComplete = false;
             while (!turnComplete) {
                 System.out.println(board.renderColored());
-                System.out.println("\nAction for " + hero.getName() + " (" + hero.getLane() + " Lane):");
+
+                System.out.println("\n[H" + i + "] Action for " + hero.getName() + " (" + hero.getLane() + " Lane):");
+                System.out.println();
                 System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [C] Cast Spell | [R] Recall");
                 System.out.println("[M] Market | [I] Info | [E] Equip/Item | [L] Legend | [Q] Quit");
                 System.out.print("> ");
@@ -80,6 +87,7 @@ public class HeroTurnState implements LovGameState {
 
                 if (command != null) {
                     if (command.execute()) {
+                        i++;
                         turnComplete = true;
                     }
                 }
@@ -97,7 +105,9 @@ public class HeroTurnState implements LovGameState {
                 break;
             }
         }
-        context.setState(new MonsterTurnState());
+
+//        inputHandler.enter();
+          context.setState(new MonsterTurnState());
     }
 
     // Helpers
@@ -400,7 +410,7 @@ public class HeroTurnState implements LovGameState {
         System.out.println("Gold: " + hero.getGold() + " | XP: " + hero.getExperience());
 
         // Handle List<Weapon> instead of single Weapon
-        System.out.print("Equipped Weapons: ");
+        System.out.print(Colors.BLUE + "Equipped Weapons: " + Colors.RESET);
         java.util.List<core.model.item.Weapon> weapons = hero.getEquippedWeapon();
 
         if (weapons == null || weapons.isEmpty()) {
@@ -414,6 +424,22 @@ public class HeroTurnState implements LovGameState {
         }
 
         // Armor is still a single item
-        System.out.println("Equipped Armor: " + (hero.getEquippedArmor() != null ? hero.getEquippedArmor().getName() : "None"));
+        System.out.println(Colors.BLUE + "Equipped Armor: " + (hero.getEquippedArmor() != null ? hero.getEquippedArmor().getName() : "None") + Colors.RESET);
+        System.out.println();
+
+        System.out.println(Colors.GREEN + "Spells: " +  Colors.RESET);
+        for (Item item : hero.getInventory()) {
+            if (item instanceof Spell)
+            {System.out.printf("      - %-18s (Lvl %d)\n", item.getName());}
+        }
+
+        System.out.println();
+
+        System.out.println(Colors.GREEN + "Potions: " + Colors.RESET);
+        for (Item item : hero.getInventory()) {
+            if (item instanceof Potion)
+            {System.out.printf("      - %-18s (Lvl %d)\n", item.getName());}
+        }
+
     }
 }

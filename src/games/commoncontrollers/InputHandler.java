@@ -19,6 +19,14 @@ public class InputHandler {
         return scanner.next().toUpperCase();
     }
 
+    public void enter()
+    {
+        System.out.println();
+        System.out.println("Press Enter to continue...");
+        if (scanner.hasNextLine()) scanner.nextLine();
+    }
+
+
     /**
      * A method to get input of the player meant for integer operations and checking if the input is valid
      * @param min,max the range of values required

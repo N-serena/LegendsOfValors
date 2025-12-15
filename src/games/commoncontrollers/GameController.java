@@ -71,6 +71,10 @@ public abstract class GameController {
 
     public void getComplimentaryWeapons()
     {
+        System.out.println();
+        System.out.println("Here are some complimentary weapons for your heroes!");
+        System.out.println();
+
         int i = 0;
         List<Item> weapons = createComplimentaryWeapons(); //creating the complimentary weapons by retrieving from the file
 
@@ -80,11 +84,17 @@ public abstract class GameController {
 
             hero.getInventory().add(newWeapon);
 
+            System.out.print(hero.getName() + " - ");
+
             //hero equips complimentary weapon
             inventoryController.equipItem(hero, (Weapon) newWeapon);
 
             i++;
         }
+
+        System.out.println();
+        System.out.println("But remember, always head to market to get more skilled weapons!");
+        System.out.println("--------------------------------------------------------------------------------------");
     }
 
     public List<Item> createComplimentaryWeapons()

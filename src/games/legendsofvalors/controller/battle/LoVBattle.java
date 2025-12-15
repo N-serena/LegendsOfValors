@@ -3,6 +3,7 @@ package games.legendsofvalors.controller.battle;
 import core.model.Party;
 import core.model.entity.Hero;
 import core.interfaces.Board;
+import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.PartyController;
 import games.commoncontrollers.actions.Attack;
 import games.commoncontrollers.actions.CastSpell;
@@ -20,6 +21,7 @@ import games.legendsofvalors.model.world.LovBoard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Handles the Turn-Based Combat State.
@@ -36,10 +38,12 @@ public class LoVBattle extends BattleController implements Battle {
     private PartyController partyController;
 
     private LoVHeroController valorHeroController;
+    private InventoryController inventoryController;
 
     public LoVBattle() {
         valorHeroController = new LoVHeroController();
         partyController = new PartyController();
+        inventoryController = new InventoryController(new Scanner(System.in));
     }
 
     /**
@@ -132,6 +136,7 @@ public class LoVBattle extends BattleController implements Battle {
                 //distribute rewards
                 partyController.defeatedMonster(target.getLevel());
             }
+            inventoryController.consumeItem((Hero) attacker, s);
         }
         return true;
     }

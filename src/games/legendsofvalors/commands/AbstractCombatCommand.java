@@ -38,13 +38,13 @@ public abstract class AbstractCombatCommand implements LovCommand {
         boolean battleSuccess = proxy.startBattle(hero, target, getStrategy(), party, board);
 
         // 3. Common Cleanup Logic
-        if (target.isFainted()) {
-            // Check if it's still on the board before trying to remove
-            if (board.getMonsterPosition(target) != null) {
-                System.out.println("   -> " + target.getName() + " has been defeated and removed.");
-                board.removeMonster(target);
-            }
-        }
+//        if (target.isFainted()) {
+//            // Check if it's still on the board before trying to remove
+//            if (board.getMonsterPosition(target) != null) {
+//                System.out.println("   -> " + target.getName() + " has been defeated and removed.");
+//                board.removeMonster(target);
+//            }
+//        }
         return battleSuccess;
     }
 }

@@ -12,6 +12,11 @@ public class GameConfig {
     public static final int DEFAULT_SPAWN_INTERVAL = 8;
     public static final int CELL_WIDTH = 6;
     public static final double BUFF_MULTIPLIER = 1.1;
+    public static final double PERC_INC = 10;
+
+    public static final String DEXTERITY = "Dexterity";
+    public static final String STRENGTH = "STRENGTH";
+    public static final String AGILITY = "Agility";
 
     public static final String TOP_LANE_COLOR = Colors.BG_BRIGHT_BLUE;
     public static final String MID_LANE_COLOR = Colors.BG_BRIGHT_GREEN;

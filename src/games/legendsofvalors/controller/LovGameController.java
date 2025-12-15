@@ -7,6 +7,7 @@ import core.model.entity.Hero;
 import core.model.entity.Monster;
 import core.util.Colors;
 import games.commoncontrollers.GameController;
+import games.commoncontrollers.InputHandler;
 import games.commoncontrollers.InventoryController;
 import games.commoncontrollers.MarketController;
 import games.legendsofvalors.states.HeroTurnState;
@@ -26,9 +27,10 @@ public class LovGameController extends GameController implements GameEngine {
     private LovGameState currentState;
     private int roundNumber = 1;
     public boolean isRunning = true;
-    public int numOfMonstersDefeated;
+    public int numOfMonstersSpawned;
 
     //Controllers
+    private InputHandler inputHandler;
     private MarketController marketController;
 
     public LovGameController() {
@@ -37,9 +39,10 @@ public class LovGameController extends GameController implements GameEngine {
         this.scanner = new Scanner(System.in);
 
         //Initialize controllers
+        this.inputHandler = new InputHandler();
         this.inventoryController = new InventoryController(scanner);
         this.marketController = new MarketController(scanner, inventoryController);
-        numOfMonstersDefeated = 0;
+        numOfMonstersSpawned = 0;
     }
 
     @Override
@@ -74,6 +77,7 @@ public class LovGameController extends GameController implements GameEngine {
         this.currentState = new HeroTurnState();
 
         while (isRunning) {
+            inputHandler.enter();
             currentState.execute(this);
         }
     }
@@ -184,6 +188,7 @@ public class LovGameController extends GameController implements GameEngine {
         ValorMonster vm = new ValorMonster(template, lane);
         vm.scaleStats(1);
         board.placeMonster(vm, r, c);
+        numOfMonstersSpawned++;
     }
 
     private String getLaneName(int col) {
@@ -217,7 +222,7 @@ public class LovGameController extends GameController implements GameEngine {
             System.out.println(h);
         }
         System.out.println();
-        //System.out.println("NUMBER OF MONSTERS DEFEATED: " + numOfMonstersDefeated);
+        System.out.println("NUMBER OF MONSTERS DEFEATED: " + (numOfMonstersSpawned - board.getNumMonsters()));
         System.out.println("------------------------------------------------------------------");
 
     }
