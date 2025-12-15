@@ -31,13 +31,13 @@ public class HeroTurnState implements LovGameState {
 
     @Override
     public void execute(LovGameController context) {
-        context.displayBoard();
-
         printRoundBanner(context);
         displayStatus(context);
         LovBoard board = context.getBoard();
         Scanner scanner = context.getScanner();
         int i = 1;
+
+        context.displayBoard();
 
         for (ValorHero hero : context.getHeroes()) {
             if (hero.isFainted()) {
@@ -46,8 +46,6 @@ public class HeroTurnState implements LovGameState {
             }
             boolean turnComplete = false;
             while (!turnComplete) {
-                System.out.println(board.renderColored());
-
                 System.out.println("\n[H" + i + "] Action for " + hero.getName() + " (" + hero.getLane() + " Lane):");
                 System.out.println();
                 System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [C] Cast Spell | [R] Recall");
@@ -85,8 +83,10 @@ public class HeroTurnState implements LovGameState {
                     default: System.out.println("Invalid command.");
                 }
 
+
                 if (command != null) {
                     if (command.execute()) {
+                        context.displayBoard();
                         i++;
                         turnComplete = true;
                     }

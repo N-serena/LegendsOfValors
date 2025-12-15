@@ -76,6 +76,7 @@ public class LoVBattle extends BattleController implements Battle {
         //have to check if there are multiple monster/heroes in range. If there are, give hero the option to choose their target
         if (this.currentFightStrategy instanceof Attack)
         {
+            printAction("ATTACK");
             //if attacker is a hero
             if (attacker instanceof ValorHero) {
                 Weapon w = (Weapon) selectAttackItem(attacker); //get the desired weapon of the hero
@@ -129,6 +130,7 @@ public class LoVBattle extends BattleController implements Battle {
         //if the hero wants to cast a spell
         else if (this.currentFightStrategy instanceof CastSpell)
         {
+            printAction("SPELL ATTACK");
             Spell s = (Spell) selectSpellItem(attacker);
             currentFightStrategy.performFightAction(attacker, target, s);
             if (target.isFainted())
@@ -200,5 +202,11 @@ public class LoVBattle extends BattleController implements Battle {
             int index = rand.nextInt(heroes.size());
             return heroes.get(index);
         }
+    }
+
+    public void printAction(String action)
+    {
+        System.out.println();
+        System.out.println("[ " + action + " ] ");
     }
 }

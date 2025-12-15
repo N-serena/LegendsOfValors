@@ -33,6 +33,11 @@ public class MoveCommand implements LovCommand {
             System.out.println("Invalid Move: Diagonal movement is forbidden.");
             return false;
         }
+        else if (!board.inBounds(targetRow, targetCol)) {
+            System.out.println("Invalid Move: Enter a direction within bounds of the board.");
+            System.out.println();
+            return false;
+        }
 
         // 3. Validate "Cannot Move Behind Monster" Rule
         // We only care if we are moving FORWARD (decreasing row index, e.g., 7 -> 6)

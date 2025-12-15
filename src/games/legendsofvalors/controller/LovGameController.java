@@ -70,7 +70,7 @@ public class LovGameController extends GameController implements GameEngine {
 
         // 3. Wait for Enter
         System.out.println(Colors.GREEN + "\nPress ENTER to start the battle..." + Colors.RESET);
-        if (scanner.hasNextLine()) scanner.nextLine(); // Wait for actual enter
+        inputHandler.enter(); // Wait for actual enter
 
         // 4. Setup & Start Loop
         setupGame();
@@ -229,6 +229,7 @@ public class LovGameController extends GameController implements GameEngine {
 
     public void displayBoard()
     {
+        System.out.println();
         System.out.println(board.renderColored());
     }
 

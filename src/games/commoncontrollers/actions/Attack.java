@@ -62,6 +62,7 @@ public class Attack implements FightStrategy {
                 } else {
                     System.out.println(monster.getName() + " hit " + target.getName() + " for " + (int)actualDmg + " damages.");
                 }
+                System.out.println();
             }
         }
     }

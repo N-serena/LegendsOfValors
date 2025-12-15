@@ -589,7 +589,7 @@ public class LovBoard implements Board {
     }
 
     // Checks that the requested coordinates fall within the board limits.
-    private boolean inBounds(int row, int col) {
+    public boolean inBounds(int row, int col) {
         return row >= 0 && row < GameConfig.BOARD_SIZE && col >= 0 && col < GameConfig.BOARD_SIZE;
     }
 

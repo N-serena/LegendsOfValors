@@ -2,6 +2,7 @@ package games.legendsofvalors.model;
 
 import core.interfaces.HeroObserver;
 import core.model.entity.Hero;
+import core.util.Colors;
 
 /**
  * a hero class used for Legends of Valor, extends Hero
@@ -63,7 +64,8 @@ public class ValorHero extends Hero implements HeroObserver {
     @Override
     public void levelUp() {
         applyStandardLevelUp();
-        System.out.println(this.name + " has leveled up to " + this.level + " in Legends of Valors!");
+        System.out.println();
+        System.out.println(Colors.GREEN + this.name + " has leveled up to " + this.level + " in Legends of Valors!" + Colors.RESET);
     }
 
     @Override
@@ -71,7 +73,6 @@ public class ValorHero extends Hero implements HeroObserver {
         return super.toString() + String.format(" | Lane: %s | Nexus: (%d, %d)", lane, nexusRow, nexusCol);
     }
 
-    // Getters for Person 1 (Map) and Person 3 (Game Loop)
     public int getNexusRow() { return nexusRow; }
     public int getNexusCol() { return nexusCol; }
     public int getCurrentRow() { return currentRow; }

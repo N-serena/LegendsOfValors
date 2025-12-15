@@ -32,6 +32,7 @@ public class CastSpell implements FightStrategy {
 
         target.takeDamage(damage);
         System.out.println("Cast " + spell.getType() + ": " + spell.getName() + " for " + (int)damage + " damage.");
+        System.out.println();
 
         spell.castEffect((Monster) target);
     }
