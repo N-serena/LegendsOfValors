@@ -3,6 +3,9 @@ package games.legendsofvalors.model;
 import core.interfaces.HeroObserver;
 import core.model.entity.Hero;
 
+/**
+ * a hero class used for Legends of Valor, extends Hero
+ */
 public class ValorHero extends Hero implements HeroObserver {
 
     // LOV Specific Attributes

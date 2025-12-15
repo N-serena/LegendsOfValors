@@ -1,9 +1,8 @@
-import java.util.Scanner;
 import core.interfaces.GameEngine;
 import core.util.SoundPlayer;
 import games.commoncontrollers.InputHandler;
 import games.legendsofvalors.controller.LovGameController;
-import games.monstersandheroes.contoller.MHGameController;
+import games.monstersandheroes.controller.MHGameController;
 
 public class GameLauncher {
 

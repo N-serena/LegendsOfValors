@@ -1,10 +1,8 @@
-package games.monstersandheroes.contoller;
+package games.monstersandheroes.controller;
 
 import core.interfaces.GameEngine;
-import core.model.GameDatabase;
 import core.model.Party;
 import core.model.entity.Hero;
-import core.model.entity.Monster;
 import core.model.item.Item;
 import core.model.world.MarketTile;
 import core.util.GameConfig;
@@ -16,7 +14,6 @@ import core.model.world.Tile;
 import core.util.Colors;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 

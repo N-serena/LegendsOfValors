@@ -42,6 +42,11 @@ public class LoVBattle extends BattleController implements Battle {
         partyController = new PartyController();
     }
 
+    /**
+     * Main entry point for the battle
+     * @param attacker,target,fightStrategy,party,board
+     * @return isActionDone to indicate the outcome of the attack
+     */
     @Override
     public boolean startBattle(LivingEntity attacker, LivingEntity target, FightStrategy fightStrategy, Party party, Board board)
     {
@@ -52,22 +57,27 @@ public class LoVBattle extends BattleController implements Battle {
         this.board = (LovBoard) board;
         this.party = party;
 
-        addHeroObservers(party);
+        addHeroObservers(party); //registering the party members as observers
         boolean isActionDone = fight();
 
         return isActionDone;
     }
 
+    /**
+     * To carry out the fight actions of the attacker on the target
+     * @return boolean value to indicate the outcome of the attack
+     */
     public boolean fight()
     {
         //have to check if there are multiple monster/heroes in range. If there are, give hero the option to choose their target
         if (this.currentFightStrategy instanceof Attack)
         {
-            if (attacker instanceof ValorHero) { //maybe a battleProxyclass to check if hero has the weapons and spells before creating battle
-                Weapon w = (Weapon) selectAttackItem(attacker);
+            //if attacker is a hero
+            if (attacker instanceof ValorHero) {
+                Weapon w = (Weapon) selectAttackItem(attacker); //get the desired weapon of the hero
 
                 //pass control to fightStrategy to peform attack
-                currentFightStrategy.performFightAction(attacker, target, w);
+                currentFightStrategy.performFightAction(attacker, target, w); //transfer control to the fightstrategy to perform the attack
 
                 //check if monster has fainted
                 if (target.isFainted())
@@ -82,15 +92,15 @@ public class LoVBattle extends BattleController implements Battle {
 
                     //rewards for the party when a monster is defeated
                     partyController.defeatedMonster(target.getLevel());
-                    //distributeRewards(party);
                 }
             }
+            //if attacker is a monster
             else if (attacker instanceof ValorMonster)
             {
                 //randomly select hero target
-                //check if terrain bonuses are applied to the monster and then do the attack
                 ValorHero target = selectHeroTarget();
 
+                //transfer control to the specific fight strategy to carry out the attack
                 currentFightStrategy.performFightAction(attacker, target, null);
 
                 if (target.isFainted())
@@ -112,18 +122,24 @@ public class LoVBattle extends BattleController implements Battle {
 
             }
         }
+        //if the hero wants to cast a spell
         else if (this.currentFightStrategy instanceof CastSpell)
         {
             Spell s = (Spell) selectSpellItem(attacker);
             currentFightStrategy.performFightAction(attacker, target, s);
             if (target.isFainted())
             {
+                //distribute rewards
                 partyController.defeatedMonster(target.getLevel());
             }
         }
         return true;
     }
 
+    /**
+     * A method to register the party members as observers
+     * @param party The party of heroes
+     */
     public void addHeroObservers(Party party)
     {
         for (Hero hero : party.getHeroes())
@@ -160,6 +176,10 @@ public class LoVBattle extends BattleController implements Battle {
 //        return null;
 //    }
 
+    /**
+     * To get the heroes in range for the monster to attack
+     * @return ValorHero the selected target
+     */
     public ValorHero selectHeroTarget()
     {
         Random rand = new Random();

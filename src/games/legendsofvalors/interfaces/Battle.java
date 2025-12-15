@@ -5,6 +5,9 @@ import core.model.Party;
 import core.model.entity.LivingEntity;
 import core.interfaces.Board;
 
+/**
+ * an interface for battle
+ */
 public interface Battle {
     public boolean startBattle(LivingEntity attacker, LivingEntity target, FightStrategy fightStrategy, Party party, Board board);
 }

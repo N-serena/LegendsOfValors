@@ -17,12 +17,8 @@ import java.util.Scanner;
 import java.util.Set;
 
 /**
- * A proxy class for battle, to do additional housekeeping tasks:- checking if the hero has any weapons or spells with them.
- * also to check if there are any targets in range to perform fight actions on
- * * @author Chris Mary Benson.
- * @version 1.0
+ * Battle Proxy class for Legends of Valor, to do additional housekeeping tasks. Implements the Battle interface
  */
-
 public class LoVBattleProxy implements Battle {
 
     private LoVBattle battle;
@@ -34,6 +30,9 @@ public class LoVBattleProxy implements Battle {
         inventoryController = new InventoryController(scanner);
     }
 
+    /**
+     * main point to get to in the battleproxy. Validity checks are done here
+     */
     @Override
     public boolean startBattle(LivingEntity attacker, LivingEntity target, FightStrategy fightStrategy, Party party, Board board)
     {
@@ -41,13 +40,16 @@ public class LoVBattleProxy implements Battle {
 
         if (attacker instanceof ValorHero) {
             if (fightStrategy instanceof Attack) {
+                //checking if heroes have equipped weapons in their inventory
                 if (!inventoryController.checkForEquippedWeapons((Hero) attacker)) {
                     System.out.println("Attack not possible.");
                     return false; //return to main game loop
                 }
+                //if there are any monsters in range
                 if(!checkIfMonstersInRange(attacker, (LovBoard) board)) { return false; };
             }
             else if (fightStrategy instanceof CastSpell) {
+                //checking if the hero has any spells in thei ivnentory
                 if (!inventoryController.checkForSpells((Hero) attacker)) {
                     System.out.println("Casting spells not possible.");
                     return false; //return to main game loop
@@ -55,17 +57,23 @@ public class LoVBattleProxy implements Battle {
             }
         }
         else if (attacker instanceof ValorMonster) {
+            //checking if there are any heroes in the monster's attack range
             if(!checkIfHeroesInRange(attacker, (LovBoard) board)) { return false; }
         }
 
         if (battle == null)
         {
+            //initializing battle object only if all the checks are successfull
             battle = new LoVBattle();
         }
 
+        //start the real battle
         return battle.startBattle(attacker, target, fightStrategy, party, board);
     }
 
+    /**
+     * To check if there are monsters in range (when hero is the attacker)
+     */
     public boolean checkIfMonstersInRange(LivingEntity attacker, LovBoard board)
     {
         Set<ValorMonster> monsters = board.getMonstersInRange((ValorHero) attacker, 4);
@@ -78,6 +86,9 @@ public class LoVBattleProxy implements Battle {
         return true;
     }
 
+    /**
+     * To check if there are heroes in range (when monster is the attacker)
+     */
     public boolean checkIfHeroesInRange(LivingEntity attacker, LovBoard board)
     {
         Set<ValorHero> heroes = board.getHeroesInRange((ValorMonster) attacker, 1);

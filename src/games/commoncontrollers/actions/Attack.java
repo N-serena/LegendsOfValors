@@ -21,6 +21,7 @@ public class Attack implements FightStrategy {
     {
         HeroController heroController = new HeroController();
 
+        //if the attacker is a hero
         if (attacker instanceof Hero)
         {
             Monster monster = (Monster) target;
@@ -36,6 +37,7 @@ public class Attack implements FightStrategy {
 
         }
 
+        //if attacker is a monster
         else if (attacker instanceof Monster)
         {
             Hero hero = (Hero) target;

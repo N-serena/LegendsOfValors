@@ -1,4 +1,4 @@
-package games.monstersandheroes.contoller;
+package games.monstersandheroes.controller;
 
 import core.model.Party;
 import core.model.entity.*;

@@ -2,6 +2,9 @@ package games.legendsofvalors.model;
 
 import core.model.entity.Monster;
 
+/** A core class for the valor monster, extends the Monster class
+ ** @version 1.0
+ */
 public class ValorMonster extends Monster {
 
     private String lane;

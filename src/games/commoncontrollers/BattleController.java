@@ -31,6 +31,7 @@ public abstract class BattleController {
         this.inputHandler = new InputHandler();
     }
 
+    //helper methods for hero to select a weapon
     public Item selectAttackItem(LivingEntity attacker) {
         Weapon w = null;
 
@@ -47,6 +48,7 @@ public abstract class BattleController {
         return w;
     }
 
+    //helper methods for hero to cast a spell
     public Item selectSpellItem(LivingEntity attacker) {
         Spell s = null;
 
