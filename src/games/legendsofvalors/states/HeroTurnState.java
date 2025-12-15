@@ -44,7 +44,7 @@ public class HeroTurnState implements LovGameState {
                 System.out.println(board.renderColored());
                 System.out.println("\nAction for " + hero.getName() + " (" + hero.getLane() + " Lane):");
                 System.out.println("[W/A/S/D] Move | [T] Teleport | [K] Attack | [C] Cast Spell | [R] Recall");
-                System.out.println("[M] Market | [I] Info | [E] Equip/Item | [Q] Quit");
+                System.out.println("[M] Market | [I] Info | [E] Equip/Item | [L] Legend | [Q] Quit");
                 System.out.print("> ");
                 String input = scanner.next().toUpperCase();
 
@@ -67,6 +67,12 @@ public class HeroTurnState implements LovGameState {
                     // SEPARATED INFO & EQUIP
                     case "I": handleInfoInput(hero); break; // Just Stats
                     case "E": handleEquipInput(hero, context); break; // Equip & Potions
+                    case "L": 
+                        System.out.println("\n" + board.getLegendText());
+                        System.out.println("\nPress Enter to continue...");
+                        scanner.nextLine(); // Consume newline
+                        scanner.nextLine(); // Wait for user
+                        break;
 
                     case "Q": context.isRunning = false; turnComplete = true; break;
                     default: System.out.println("Invalid command.");

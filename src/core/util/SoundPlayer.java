@@ -13,7 +13,7 @@ public class SoundPlayer {
 
     public static void playBackgroundMusic(String filePath) {
         if (!soundEnabled) {
-            return; // 如果音频已被禁用，直接返回
+            return; // Return immediately if audio is disabled
         }
         
         new Thread(() -> {

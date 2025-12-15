@@ -25,6 +25,13 @@ public class LovTile extends Tile {
     private final NexusType nexusType;
     private final boolean inaccessible;
 
+    /**
+     * Private constructor for creating LovTile instances
+     * terrain：PLAIN, BUSH, CAVE, KOULOU, OBSTACLE
+     * nexusType：NONE, HERO, MONSTER
+     * inaccessible：boolean
+     * typeName：Display name for the tile type
+     */
     private LovTile(Terrain terrain, NexusType nexusType, boolean inaccessible, String typeName) {
         super(typeName);
         this.terrain = terrain;
@@ -32,58 +39,66 @@ public class LovTile extends Tile {
         this.inaccessible = inaccessible;
     }
 
-    // Create a hero nexus tile
+    /**
+     * Create a hero nexus tile (starting position for heroes)
+     */
     public static LovTile heroNexus() {
         return new LovTile(Terrain.PLAIN, NexusType.HERO, false, "HeroNexus");
     }
 
-    // Create a monster nexus tile
+    /**
+     * Create a monster nexus tile (spawn point for monsters)
+     */
     public static LovTile monsterNexus() {
         return new LovTile(Terrain.PLAIN, NexusType.MONSTER, false, "MonsterNexus");
     }
 
-    // Create an inaccessible wall tile
+    /**
+     * Create an inaccessible wall tile (cannot be entered)
+     */
     public static LovTile inaccessible() {
         return new LovTile(null, NexusType.NONE, true, "Inaccessible");
     }
 
-    // Create a regular terrain tile of the specified type.
+    /**
+     * Create a regular terrain tile of the specified type
+     */
     public static LovTile terrain(Terrain terrain) {
         return new LovTile(terrain, NexusType.NONE, false, terrainDisplayName(terrain));
     }
 
-    // Check whether this tile can be entered.
     public boolean isAccessible() {
         return !inaccessible;
     }
 
-    // Determine if the tile is currently an obstacle.
     public boolean isObstacle() {
         return terrain == Terrain.OBSTACLE;
     }
-
-    // Check whether this tile is the hero nexus.
     public boolean isHeroNexus() {
         return nexusType == NexusType.HERO;
     }
 
-    // Check whether this tile is the monster nexus。
     public boolean isMonsterNexus() {
         return nexusType == NexusType.MONSTER;
     }
 
-    // Get the nexus type for this tile.
+    /**
+     * Get the nexus type for this tile
+     * nexusType：NONE, HERO, or MONSTER
+     */
     public NexusType getNexusType() {
         return nexusType;
     }
 
-    // Get the current terrain type.
+    /**
+     * return Terrain enum value
+     */
     public Terrain getTerrain() {
         return terrain;
     }
 
     /**
-     * Converts an obstacle into a plain tile after removal.
+     * Converts an obstacle into a plain tile after removal
      */
     public void clearObstacle() {
         if (terrain == Terrain.OBSTACLE) {
@@ -92,7 +107,10 @@ public class LovTile extends Tile {
         }
     }
 
-    // Obtain the single-character symbol representing this tile.
+    /**
+     * Obtain the single-character symbol representing this tile for ASCII rendering
+     * @return Character symbol: 'I'=Inaccessible, 'N'=Nexus, 'B'=Bush, 'C'=Cave, 'K'=Koulou, 'O'=Obstacle, 'P'=Plain
+     */
     public char getSymbol() {
         if (inaccessible) {
             return 'I';
@@ -115,12 +133,17 @@ public class LovTile extends Tile {
         }
     }
 
-    // Check whether the tile grants a temporary stat buff.
+    /**
+     * Check whether the tile grants a temporary stat buff to heroes
+     * BUSH=Dexterity, CAVE=Agility, KOULOU=Strength
+     */
     public boolean hasTerrainBuff() {
         return terrain == Terrain.BUSH || terrain == Terrain.CAVE || terrain == Terrain.KOULOU;
     }
 
-    // Convert the terrain enum to its display name.
+    /**
+     * Convert the terrain enum to its display name string
+     */
     private static String terrainDisplayName(Terrain terrain) {
         switch (terrain) {
             case BUSH:

@@ -11,14 +11,24 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * Default terrain generator that produces a balanced random spread of special tiles.
- * 默认地形生成器，保证特殊地形在地图上合理分布。
+ * Default terrain generator that produces a balanced random spread of special tiles
+ * Ensures all terrain types appear at least once and distributes them fairly across lanes
  */
 public class RandomTerrainGenerator implements TerrainGenerator {
 
+    /**
+     * Populate the inner lane tiles with randomized terrain while preserving mandatory types
+     * Strategy:
+     *   1. Collect all inner lane positions (rows 1-6)
+     *   2. Shuffle positions randomly
+     *   3. Place one of each required type (BUSH, CAVE, KOULOU, OBSTACLE)
+     *   4. Fill remaining positions with weighted random terrain
+     *   5. Ensure at least one PLAIN tile exists
+     * tiles: is the2D array of tiles to populate
+     * lanes: List of lane definitions with column mappings
+     * random:Random number generator for reproducible terrain
+     */
     @Override
-    // Populate the inner lane tiles with randomized terrain while preserving mandatory types.
-    // 为各线路的内部格子生成随机地形，并确保必备地形类型出现。
     public void generate(LovTile[][] tiles, List<LovBoard.Lane> lanes, Random random) {
         Objects.requireNonNull(tiles, "tiles");
         Objects.requireNonNull(lanes, "lanes");
@@ -64,8 +74,11 @@ public class RandomTerrainGenerator implements TerrainGenerator {
         }
     }
 
-    // Collect the coordinates inside each lane that are eligible for random terrain placement.
-    // 获取各条线路中可用来随机化地形的内部坐标。
+    /**
+     * Collect the coordinates inside each lane that are eligible for random terrain placement
+     * Excludes row 0 (monster nexus) and row 7 (hero nexus)
+     * return List of Position objects representing inner lane cells
+     */
     private List<LovBoard.Position> collectInnerLanePositions(int boardSize, List<LovBoard.Lane> lanes) {
         List<LovBoard.Position> positions = new ArrayList<>();
         for (int row = 1; row < boardSize - 1; row++) {
@@ -78,8 +91,13 @@ public class RandomTerrainGenerator implements TerrainGenerator {
         return positions;
     }
 
-    // Roll a weighted random terrain type based on the configured probabilities.
-    // 根据设定的权重生成一个随机地形类型。
+    /**
+     * Roll a weighted random terrain type based on the configured probabilities
+     * Uses cumulative probability distribution from GameConfig weights
+     * Default distribution: PLAIN (55%), BUSH (15%), CAVE (15%), KOULOU (10%), OBSTACLE (5%)
+     * @param random Random number generator
+     * @return Randomly selected Terrain type based on weights
+     */
     private LovTile.Terrain rollTerrain(Random random) {
         double roll = random.nextDouble();
         if (roll < GameConfig.PLAIN_WEIGHT) {

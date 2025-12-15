@@ -21,6 +21,6 @@ public class GameConfig {
     public static final String BUSH_COLOR = Colors.BG_GREEN;
     public static final String CAVE_COLOR = Colors.BG_PURPLE;
     public static final String KOULOU_COLOR = Colors.BG_BRIGHT_WHITE;
-    public static final String OBSTACLE_COLOR = Colors.BG_BRIGHT_PURPLE;
+    public static final String OBSTACLE_COLOR = Colors.BG_BRIGHT_RED;
 
 }

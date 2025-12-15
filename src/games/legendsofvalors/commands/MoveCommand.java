@@ -54,7 +54,15 @@ public class MoveCommand implements LovCommand {
             }
         }
 
-        // 4. Execute Move on Board
+        // 4. Check if target is an obstacle - clearing it consumes the turn
+        games.legendsofvalors.model.world.LovTile targetTile = board.getTile(targetRow, targetCol);
+        if (targetTile.isObstacle()) {
+            System.out.println(hero.getName() + " clears the obstacle! (Turn consumed)");
+            targetTile.clearObstacle();
+            return true; // Turn consumed by clearing obstacle
+        }
+
+        // 5. Execute Move on Board
         // The board handles wall checks and occupancy checks internally
         if (board.moveHero(hero, targetRow, targetCol)) {
             return true; // Success

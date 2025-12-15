@@ -43,6 +43,8 @@ public class LovBoard implements Board {
     private final List<Lane> lanes;
     private final Random random;
     private final TerrainGenerator terrainGenerator;
+    private final MonsterAI monsterAI;
+    private final BoardRenderer renderer;
 
     private int heroLabelCounter;
     private int monsterLabelCounter;
@@ -66,6 +68,8 @@ public class LovBoard implements Board {
         this.spawnInterval = GameConfig.DEFAULT_SPAWN_INTERVAL;
         this.roundsSinceLastSpawn = 0;
         this.lanes = initialiseLanes();
+        this.monsterAI = new MonsterAI(this);
+        this.renderer = new BoardRenderer(this);
         initialiseOccupancy();
         buildBoard();
     }
@@ -120,53 +124,6 @@ public class LovBoard implements Board {
         }
     }
 
-    /**---MINE---**/
-    /*private void randomizeTerrain() {
-        // 2. Randomise lane terrain for inner rows (1..6).
-        List<Position> available = new ArrayList<>();
-        for (int row = 1; row < GameConfig.BOARD_SIZE - 1; row++) {
-            for (Lane lane : lanes) {
-                for (int col : lane.columns) {
-                    available.add(new Position(row, col));
-                }
-            }
-        }
-        Collections.shuffle(available, random);
-        LovTile.Terrain[] required = new LovTile.Terrain[]{
-                LovTile.Terrain.BUSH,
-                LovTile.Terrain.CAVE,
-                LovTile.Terrain.KOULOU,
-                LovTile.Terrain.OBSTACLE
-        };
-
-        int index = 0;
-        for (; index < required.length && index < available.size(); index++) {
-            Position pos = available.get(index);
-            tiles[pos.row][pos.col] = LovTile.terrain(required[index]);
-        }
-
-        for (; index < available.size(); index++) {
-            Position pos = available.get(index);
-            LovTile.Terrain terrain = randomTerrain();
-            tiles[pos.row][pos.col] = LovTile.terrain(terrain);
-        }
-    }*/
-
-    private LovTile.Terrain randomTerrain() {
-        // Weighted random distribution favouring Plain tiles.
-        double roll = random.nextDouble();
-        if (roll < 0.55) {
-            return LovTile.Terrain.PLAIN;
-        } else if (roll < 0.7) {
-            return LovTile.Terrain.BUSH;
-        } else if (roll < 0.85) {
-            return LovTile.Terrain.CAVE;
-        } else if (roll < 0.95) {
-            return LovTile.Terrain.KOULOU;
-        }
-        return LovTile.Terrain.OBSTACLE;
-    }
-
     // Adjusts the monster wave spawn frequency with basic guarding.
     public void setSpawnInterval(int spawnInterval) {
         this.spawnInterval = Math.max(1, spawnInterval);
@@ -215,10 +172,7 @@ public class LovBoard implements Board {
             occupancy[previous.row][previous.col].hero = null;
         }
 
-        if (tiles[row][col].isObstacle()) {
-            tiles[row][col].clearObstacle();
-        }
-
+        // Obstacle should be cleared by MoveCommand before calling this
         targetCell.hero = hero;
         //occupancy[row][col].hero = hero;
         heroPositions.put(hero, new Position(row, col));
@@ -246,9 +200,7 @@ public class LovBoard implements Board {
         removeTerrainBuff(hero);
         occupancy[current.row][current.col].hero = null;
 
-        if (tiles[targetRow][targetCol].isObstacle()) {
-            tiles[targetRow][targetCol].clearObstacle();
-        }
+        // Obstacle should be cleared by MoveCommand before calling this
         targetCell.hero = hero;
         heroPositions.put(hero, new Position(targetRow, targetCol));
         applyTerrainEffects(hero, tiles[targetRow][targetCol]);
@@ -313,20 +265,35 @@ public class LovBoard implements Board {
         return true;
     }
 
-    // Iterates per lane to move monsters or leave them ready to attack.
+    /**
+     * Iterates per lane to move monsters using decision making
+     * Each monster evaluates its tactical situation and decides:
+     *   - ATTACK: Stay in place if heroes are in range
+     *   - ADVANCE: Move forward toward hero nexus
+     *   - RETREAT: Move backward toward monster nexus
+     *   - EVADE: Attempt to escape hero threat range
+     * Processes monsters from furthest to nearest in each lane
+     */
     public void advanceMonsters() {
         for (Lane lane : lanes) {
-                List<Map.Entry<ValorMonster, Position>> laneMonsters = monsterPositions.entrySet().stream()
+            List<Map.Entry<ValorMonster, Position>> laneMonsters = monsterPositions.entrySet().stream()
                     .filter(entry -> lane.contains(entry.getValue().col))
                     .sorted(Comparator.comparingInt(entry -> -entry.getValue().row))
                     .collect(Collectors.toList());
 
             for (Map.Entry<ValorMonster, Position> entry : laneMonsters) {
                 ValorMonster monster = entry.getKey();
-                if (!getHeroesInRange(monster, 1).isEmpty()) {
-                    continue; // attack instead of move
+                
+                // Use AI to make movement decision
+                MonsterAI.MovementDecision decision = monsterAI.makeMovementDecision(monster);
+                
+                if (decision.type == MonsterAI.MovementDecision.Type.ATTACK) {
+                    // Stay and attack, don't move
+                    continue;
                 }
-                moveMonsterForward(monster);
+                
+                // Execute movement decision
+                monsterAI.executeMovement(monster, decision);
             }
         }
     }
@@ -452,53 +419,17 @@ public class LovBoard implements Board {
 
     // Renders an ASCII snapshot of the board without ANSI colors.
     public String render() {
-        return render(false);
+        return renderer.render();
     }
 
     // Renders the board using ANSI colors for terminal UIs that support it.
     public String renderColored() {
-        return render(true);
-    }
-
-    // Internal rendering helper shared by colored and uncolored output.
-    private String render(boolean colored) {
-        StringBuilder sb = new StringBuilder();
-        String horizontalBorder = createHorizontalBorder();
-        sb.append(horizontalBorder);
-        for (int row = 0; row < GameConfig.BOARD_SIZE; row++) {
-            sb.append('|');
-            for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
-                sb.append(formatCell(row, col, colored)).append('|');
-            }
-            sb.append(System.lineSeparator()).append(horizontalBorder);
-        }
-        return sb.toString();
+        return renderer.renderColored();
     }
 
     // Provides a legend describing the color-coded map symbols.
     public String getLegendText() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Map Legend (press 'L' to view in game):").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.MONSTER_NEXUS_COLOR, "Nexus"))
-                .append("  Monsters' Nexus - spawn point for enemies.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.TOP_LANE_COLOR, "Top"))
-                .append("  Top lane path controlled by heroes.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.MID_LANE_COLOR, "Mid"))
-                .append("  Mid lane path controlled by heroes.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.BOT_LANE_COLOR, "Bot"))
-                .append("  Bot lane path controlled by heroes.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.BUSH_COLOR, "Bush"))
-                .append("  Bush tile - grants Dexterity bonus while standing here.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.CAVE_COLOR, "Cave"))
-                .append("  Cave tile - grants Agility bonus while standing here.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.KOULOU_COLOR, "Koulou"))
-                .append("  Koulou tile - grants Strength bonus while standing here.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.OBSTACLE_COLOR, "Block"))
-                .append("  Temporary obstacle - clears to Plain after a hero enters.").append(System.lineSeparator());
-        sb.append(colorSwatch(GameConfig.INACCESSIBLE_COLOR, "Wall"))
-                .append("  Inaccessible wall - cannot be entered.").append(System.lineSeparator());
-        sb.append("H# / M# markers show hero or monster occupying a cell.");
-        return sb.toString();
+        return renderer.getLegendText();
     }
 
     // Clears occupancy and labels so the board can be reused or restarted.
@@ -531,11 +462,6 @@ public class LovBoard implements Board {
     // Returns the full map of monster positions (Needed for C7.2 Status Panel)
     public Map<ValorMonster, Position> getMonsterPositions() {
         return monsterPositions;
-    }
-
-    // Exposes the board tile grid for read-only inspection.
-    public LovTile[][] getTiles() {
-        return tiles;
     }
 
     // Provides access to hero positions for controllers that need direct coordination.
@@ -616,86 +542,6 @@ public class LovBoard implements Board {
         }
     }
 
-    // Formats the textual representation of a single board cell.
-    private String formatCell(int row, int col, boolean colored) {
-        String content = cellContent(row, col, colored);
-        if (!colored) {
-            return pad(content);
-        }
-        String background = determineBackground(row, col);
-        String foreground = determineForeground(background);
-        return background + foreground + Colors.BOLD + pad(content) + Colors.RESET;
-    }
-
-    // Determines the raw symbol(s) that should appear in a cell.
-    private String cellContent(int row, int col, boolean colored) {
-        CellState cell = occupancy[row][col];
-        boolean hasHero = cell.hero != null;
-        boolean hasMonster = cell.monster != null;
-        if (hasHero && hasMonster) {
-            return heroLabels.get(cell.hero) + "/" + monsterLabels.get(cell.monster);
-        }
-        if (hasHero) {
-            return heroLabels.get(cell.hero);
-        }
-
-        if (hasMonster) {
-            return monsterLabels.get(cell.monster);
-        }
-        return colored ? "" : String.valueOf(tiles[row][col].getSymbol());
-    }
-
-    // Resolves the ANSI background color for rendering a cell.
-    private String determineBackground(int row, int col) {
-        LovTile tile = tiles[row][col];
-        if (!tile.isAccessible()) {
-            return GameConfig.INACCESSIBLE_COLOR;
-        }
-        if (tile.isMonsterNexus()) {
-            return GameConfig.MONSTER_NEXUS_COLOR;
-        }
-        if (tile.isHeroNexus()) {
-            return laneColorForColumn(col);
-        }
-        LovTile.Terrain terrain = tile.getTerrain();
-        if (terrain == null) {
-            return laneColorForColumn(col);
-        }
-        switch (terrain) {
-            case BUSH:
-                return GameConfig.BUSH_COLOR;
-            case CAVE:
-                return GameConfig.CAVE_COLOR;
-            case KOULOU:
-                return GameConfig.KOULOU_COLOR;
-            case OBSTACLE:
-                return GameConfig.OBSTACLE_COLOR;
-            case PLAIN:
-            default:
-                return laneColorForColumn(col);
-        }
-    }
-
-    // Selects a readable foreground color based on the background brightness.
-    private String determineForeground(String background) {
-        if (background.equals(Colors.BG_YELLOW)
-                || background.equals(Colors.BG_BRIGHT_YELLOW)
-                || background.equals(Colors.BG_WHITE)
-                || background.equals(Colors.BG_BRIGHT_WHITE)
-                || background.equals(Colors.BG_CYAN)
-                || background.equals(Colors.BG_BRIGHT_CYAN)
-                || background.equals(Colors.BG_BRIGHT_GREEN)) {
-            return Colors.BLACK;
-        }
-        return Colors.WHITE;
-    }
-
-    // Retrieves the lane accent color for a given column.
-    private String laneColorForColumn(int column) {
-        Lane lane = getLaneForColumn(column);
-        return (lane != null) ? lane.getColor() : Colors.BG_WHITE;
-    }
-
     /** MINEEEE **/
     public ValorMonster getLeadingMonsterInLane(int column) {
         Lane lane = getLaneForColumn(column);
@@ -726,20 +572,6 @@ public class LovBoard implements Board {
         return false;
     }
 
-    // Builds the horizontal border string reused between rows during rendering.
-    private String createHorizontalBorder() {
-        StringBuilder border = new StringBuilder();
-        border.append('+');
-        for (int col = 0; col < GameConfig.BOARD_SIZE; col++) {
-            for (int i = 0; i < GameConfig.CELL_WIDTH; i++) {
-                border.append('-');
-            }
-            border.append('+');
-        }
-        border.append(System.lineSeparator());
-        return border.toString();
-    }
-
     // Allocates a unique display label for a hero when first placed.
     private void registerHeroLabel(ValorHero hero) {
         heroLabels.computeIfAbsent(hero, key -> "H" + (++heroLabelCounter));
@@ -767,27 +599,101 @@ public class LovBoard implements Board {
         return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
     }
 
-    // Pads content to a fixed cell width for consistent table output.
-    private String pad(String raw) {
-        String value = (raw == null) ? "" : raw;
-        if (value.length() >= GameConfig.CELL_WIDTH) {
-            return value.substring(0, GameConfig.CELL_WIDTH);
+    // === Accessor methods for BoardRenderer and MonsterAI ===
+    
+    /**
+     * Get the occupancy state of a cell (hero and monster presence)
+     * Used by BoardRenderer to determine cell contents
+     * @param row Row index of the cell
+     * @param col Column index of the cell
+     * @return CellState object containing hero/monster references, or empty state if out of bounds
+     */
+    public CellState getCellState(int row, int col) {
+        if (!inBounds(row, col)) {
+            return new CellState();
         }
-        StringBuilder builder = new StringBuilder(value);
-        while (builder.length() < GameConfig.CELL_WIDTH) {
-            builder.append(' ');
-        }
-        return builder.toString();
+        return occupancy[row][col];
     }
 
-    // Helper used by the legend to preview tile colors.
-    private String colorSwatch(String background, String label) {
-        return background + determineForeground(background) + pad(label) + Colors.RESET;
+    /**
+     * Get a copy of the hero labels map (hero -> display label like "H1", "H2")
+     * Used by BoardRenderer to display hero markers on the board
+     * @return New LinkedHashMap containing hero-to-label mappings
+     */
+    public Map<ValorHero, String> getHeroLabels() {
+        return new LinkedHashMap<>(heroLabels);
     }
 
-    private static class CellState {
+    /**
+     * Get a copy of the monster labels map (monster -> display label like "M1", "M2")
+     * Used by BoardRenderer to display monster markers on the board
+     * @return New LinkedHashMap containing monster-to-label mappings
+     */
+    public Map<ValorMonster, String> getMonsterLabels() {
+        return new LinkedHashMap<>(monsterLabels);
+    }
+
+    /**
+     * Get the MonsterAI instance managing intelligent monster behavior
+     * Used by game states to access AI decision-making for monsters
+     * @return The MonsterAI instance associated with this board
+     */
+    public MonsterAI getMonsterAI() {
+        return monsterAI;
+    }
+
+    /**
+     * Move a monster to a specific board position (used by AI for tactical movement)
+     * Validates:
+     *   - Monster exists on board
+     *   - Target position is in bounds
+     *   - Target tile is accessible and not hero nexus
+     *   - Target cell is unoccupied
+     * Clears obstacles at target position if present
+     * @param monster The monster to move
+     * @param targetRow Target row index
+     * @param targetCol Target column index
+     * @return true if move succeeded, false if blocked or invalid
+     */
+    public boolean moveMonsterToPosition(ValorMonster monster, int targetRow, int targetCol) {
+        Position current = monsterPositions.get(monster);
+        if (current == null) {
+            return false;
+        }
+        if (!inBounds(targetRow, targetCol)) {
+            return false;
+        }
+
+        LovTile targetTile = tiles[targetRow][targetCol];
+        if (!targetTile.isAccessible() || targetTile.isHeroNexus()) {
+            return false;
+        }
+
+        CellState targetCell = occupancy[targetRow][targetCol];
+        if (targetCell.hasMonster() || targetCell.hero != null) {
+            return false;
+        }
+
+        occupancy[current.row][current.col].monster = null;
+        if (targetTile.isObstacle()) {
+            targetTile.clearObstacle();
+        }
+        targetCell.monster = monster;
+        monsterPositions.put(monster, new Position(targetRow, targetCol));
+        return true;
+    }
+
+    public static class CellState {
         private ValorHero hero;
         private ValorMonster monster;
+
+        public ValorHero getHero() {
+            return hero;
+        }
+
+        public ValorMonster getMonster() {
+            return monster;
+        }
 
         private boolean hasMonster() {
             return monster != null;
