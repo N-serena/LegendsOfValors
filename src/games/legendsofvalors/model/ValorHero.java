@@ -17,14 +17,6 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
     private int currentRow;
     private int currentCol;
 
-//    public ValorHero(String name, double mana, double str, double agi, double dex, double money, double xp) {
-//        super(name, mana, str, agi, dex, money, xp);
-//        // Default values
-//        this.nexusRow = -1;
-//        this.nexusCol = -1;
-//        this.lane = "Unassigned";
-//    }
-
     public ValorHero(Hero hero) {
         super(hero);
         this.nexusRow = -1;
@@ -32,9 +24,10 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
         this.lane = "Unassigned";
     }
 
-//    public Hero getHero() {
-//        return hero;
-//    }
+    public Hero getHero()
+    {
+        return this.hero;
+    }
 
 
     // --- RESPAWN & RECALL ---
@@ -64,9 +57,9 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
     public void getReward(int level)
     {
         this.hero.addGold(level * 500);
-        System.out.println(name + " gained " + (level * 500) + " gold!");
+        System.out.println(this.hero.getName() + " gained " + (level * 500) + " gold!");
         this.hero.addExperience(level * 2);
-        System.out.println(name + " gained " + level * 2 + " EXP!");
+        System.out.println(this.hero.getName() + " gained " + level * 2 + " EXP!");
         System.out.println();
         if (this.hero.getExperience() >= this.hero.getLevel() * 10)
         {
@@ -77,8 +70,8 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
     @Override
     public void levelUp() {
         super.levelUp();
-        System.out.println();
         System.out.println(Colors.GREEN + this.name + " has leveled up to " + this.hero.getLevel() + " in Legends of Valors!" + Colors.RESET);
+        System.out.println();
     }
 
     @Override
@@ -91,22 +84,4 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
     public int getCurrentRow() { return currentRow; }
     public int getCurrentPos() { return currentCol; }
     public String getLane() { return lane; }
-
-    public int getLevel()
-    {
-        return this.hero.getLevel();
-    }
-    public double getGold()
-    {
-        return this.hero.getGold();
-    }
-    public double getMana()
-    {
-        return this.hero.getMana();
-    }
-
-//    public int getLevel()
-//    {
-//        return this.hero.getLevel();
-//    }
 }

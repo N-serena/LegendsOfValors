@@ -37,11 +37,6 @@ public class MonsterTurnState implements LovGameState {
 
                 System.out.println("⚠️ " + monster.getName() + " attacks " + target.getName() + "!");
 
-                // USE SHARED STRATEGY
-//                Attack attackAI = new Attack();
-//                // performFightAction(attacker, target, item) - Item is null for monsters
-//                attackAI.performFightAction(monster, target, null);
-
                 Battle monsterFight = new LoVBattleProxy();
                 monsterFight.startBattle(monster, target, new Attack(), context.getParty(), board);
             }
@@ -60,7 +55,6 @@ public class MonsterTurnState implements LovGameState {
             System.out.println("***********************************");
             context.isRunning = false;
             context.displayEndGameStats("lost");
-            //System.exit(0);
         }
 
         // 4. TRANSITION

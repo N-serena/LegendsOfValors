@@ -3,6 +3,7 @@ package games.legendsofvalors.states;
 import core.model.item.Item;
 import core.model.item.Potion;
 import core.model.item.spell.Spell;
+import core.util.SoundPlayer;
 import games.commoncontrollers.InputHandler;
 import games.legendsofvalors.interfaces.LovCommand;
 import games.legendsofvalors.commands.MoveCommand;
@@ -95,10 +96,12 @@ public class HeroTurnState implements LovGameState {
 
             // Win Condition
             if (board.getHeroPosition(hero).row == 0) {
-                System.out.println("VICTORY! " + hero.getName() + " reached the Nexus!");
+                System.out.println();
+                System.out.println("============================================================================================================");
+                System.out.println(core.util.Colors.BG_BRIGHT_PURPLE + "VICTORY! " + hero.getName() + " reached the Nexus!" + core.util.Colors.RESET);
+                System.out.println("============================================================================================================");
                 context.isRunning = false;
                 context.displayEndGameStats("won");
-                //System.exit(0);
             }
             if (!context.isRunning)
             {
@@ -106,7 +109,6 @@ public class HeroTurnState implements LovGameState {
             }
         }
 
-//        inputHandler.enter();
           context.setState(new MonsterTurnState());
     }
 

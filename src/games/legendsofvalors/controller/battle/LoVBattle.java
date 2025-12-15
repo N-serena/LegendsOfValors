@@ -99,9 +99,6 @@ public class LoVBattle extends BattleController implements Battle {
             //if attacker is a monster
             else if (attacker instanceof ValorMonster)
             {
-                //randomly select hero target
-                ValorHero target = selectHeroTarget();
-
                 //transfer control to the specific fight strategy to carry out the attack
                 currentFightStrategy.performFightAction(attacker, target, null);
 
@@ -110,7 +107,7 @@ public class LoVBattle extends BattleController implements Battle {
                     printTargetFainted();
 
                     //hero respawns at their home nexus
-                    valorHeroController.respawnHero(target, board);
+                    valorHeroController.respawnHero((ValorHero) target, board);
 
                     System.out.println(target.getName() + " has respawned at their home nexus.");
                     System.out.println();
