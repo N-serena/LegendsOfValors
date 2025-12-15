@@ -195,6 +195,8 @@ public class BoardRenderer {
 
     /**
      * Truncates if too long, adds spaces if too short
+     * keeps the string within CELL_WIDTH
+     * raw：Input string to pad
      */
     private String pad(String raw) {
         String value = (raw == null) ? "" : raw;

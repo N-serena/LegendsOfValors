@@ -603,10 +603,7 @@ public class LovBoard implements Board {
     
     /**
      * Get the occupancy state of a cell (hero and monster presence)
-     * Used by BoardRenderer to determine cell contents
-     * @param row Row index of the cell
-     * @param col Column index of the cell
-     * @return CellState object containing hero/monster references, or empty state if out of bounds
+     * return CellState object containing hero/monster references, or empty state if out of bounds
      */
     public CellState getCellState(int row, int col) {
         if (!inBounds(row, col)) {
@@ -617,8 +614,7 @@ public class LovBoard implements Board {
 
     /**
      * Get a copy of the hero labels map (hero -> display label like "H1", "H2")
-     * Used by BoardRenderer to display hero markers on the board
-     * @return New LinkedHashMap containing hero-to-label mappings
+     * return New LinkedHashMap containing hero-to-label mappings
      */
     public Map<ValorHero, String> getHeroLabels() {
         return new LinkedHashMap<>(heroLabels);
@@ -626,8 +622,7 @@ public class LovBoard implements Board {
 
     /**
      * Get a copy of the monster labels map (monster -> display label like "M1", "M2")
-     * Used by BoardRenderer to display monster markers on the board
-     * @return New LinkedHashMap containing monster-to-label mappings
+     * return New LinkedHashMap containing monster-to-label mappings
      */
     public Map<ValorMonster, String> getMonsterLabels() {
         return new LinkedHashMap<>(monsterLabels);
@@ -635,8 +630,7 @@ public class LovBoard implements Board {
 
     /**
      * Get the MonsterAI instance managing intelligent monster behavior
-     * Used by game states to access AI decision-making for monsters
-     * @return The MonsterAI instance associated with this board
+     * return The MonsterAI instance associated with this board
      */
     public MonsterAI getMonsterAI() {
         return monsterAI;
@@ -650,10 +644,7 @@ public class LovBoard implements Board {
      *   - Target tile is accessible and not hero nexus
      *   - Target cell is unoccupied
      * Clears obstacles at target position if present
-     * @param monster The monster to move
-     * @param targetRow Target row index
-     * @param targetCol Target column index
-     * @return true if move succeeded, false if blocked or invalid
+     * return true if move succeeded, false if blocked or invalid
      */
     public boolean moveMonsterToPosition(ValorMonster monster, int targetRow, int targetCol) {
         Position current = monsterPositions.get(monster);
