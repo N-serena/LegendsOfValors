@@ -2,6 +2,7 @@ package games.legendsofvalors.model;
 
 import core.interfaces.HeroObserver;
 import core.model.entity.Hero;
+import core.model.entity.decorator.HeroDecorator;
 import core.util.Colors;
 
 /**

@@ -1,4 +1,4 @@
-package games.legendsofvalors.model;
+package core.model.entity.decorator;
 
 import core.model.entity.Hero;
 
