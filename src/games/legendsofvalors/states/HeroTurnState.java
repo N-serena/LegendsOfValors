@@ -424,13 +424,12 @@ public class HeroTurnState implements LovGameState {
         }
 
         // Armor is still a single item
-        System.out.println(Colors.BLUE + "Equipped Armor: " + (hero.getEquippedArmor() != null ? hero.getEquippedArmor().getName() : "None") + Colors.RESET);
-        System.out.println();
+        System.out.println(Colors.BLUE + "Equipped Armor: " + Colors.RESET + (hero.getEquippedArmor() != null ? hero.getEquippedArmor().getName() : "None"));
 
         System.out.println(Colors.GREEN + "Spells: " +  Colors.RESET);
         for (Item item : hero.getInventory()) {
             if (item instanceof Spell)
-            {System.out.printf("      - %-18s (Lvl %d)\n", item.getName());}
+            {System.out.print(" : " + item.getName());}
         }
 
         System.out.println();
@@ -438,7 +437,7 @@ public class HeroTurnState implements LovGameState {
         System.out.println(Colors.GREEN + "Potions: " + Colors.RESET);
         for (Item item : hero.getInventory()) {
             if (item instanceof Potion)
-            {System.out.printf("      - %-18s (Lvl %d)\n", item.getName());}
+            {System.out.print(" : " + item.getName());}
         }
 
     }

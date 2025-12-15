@@ -488,7 +488,8 @@ public class LovBoard implements Board {
             return false;
         }
         LovTile tile = tiles[row][col];
-        return tile.isAccessible() && !tile.isMonsterNexus();
+         //&& tile.isMonsterNexus()
+        return tile.isAccessible(); //modified
     }
 
     // Validates whether a monster can occupy the target coordinates.

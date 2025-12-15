@@ -33,6 +33,10 @@ public abstract class Hero extends LivingEntity {
     protected int handsInUse;
     protected Armor equippedArmor;
 
+    public Hero() {
+        super();
+    }
+
     /**
      * Initialize a new Hero with specific starting stats.
      */

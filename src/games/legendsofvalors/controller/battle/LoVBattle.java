@@ -87,10 +87,7 @@ public class LoVBattle extends BattleController implements Battle {
                 //check if monster has fainted
                 if (target.isFainted())
                 {
-                    System.out.println("...");
-                    System.out.println(target.getName() + " has fainted.");
-                    System.out.println(attacker.getName() + " has defeated " + target.getName() + " !");
-                    System.out.println();
+                    printTargetFainted();
 
                     //logic for removing monster
                     board.removeMonster((ValorMonster) target); //internally handles the logic for removing monster from the board
@@ -110,13 +107,7 @@ public class LoVBattle extends BattleController implements Battle {
 
                 if (target.isFainted())
                 {
-                    System.out.println("...");
-                    System.out.println(target.getName() + " has fainted");
-
-                    System.out.println("...");
-                    System.out.println(target.getName() + " has fainted.");
-                    System.out.println(attacker.getName() + " has defeated " + target.getName() + " !");
-                    System.out.println();
+                    printTargetFainted();
 
                     //hero respawns at their home nexus
                     valorHeroController.respawnHero(target, board);
@@ -135,8 +126,10 @@ public class LoVBattle extends BattleController implements Battle {
             currentFightStrategy.performFightAction(attacker, target, s);
             if (target.isFainted())
             {
+                printTargetFainted();
                 //distribute rewards
                 partyController.defeatedMonster(target.getLevel());
+                board.removeMonster((ValorMonster) target); //internally handles the logic for removing monster from the board
             }
             inventoryController.consumeItem((Hero) attacker, s);
         }
@@ -208,5 +201,15 @@ public class LoVBattle extends BattleController implements Battle {
     {
         System.out.println();
         System.out.println("[ " + action + " ] ");
+    }
+
+    public void printTargetFainted()
+    {
+        System.out.println("...");
+        System.out.println(target.getName() + " has fainted");
+
+        System.out.println("...");
+        System.out.println(attacker.getName() + " has defeated " + target.getName() + " !");
+        System.out.println();
     }
 }

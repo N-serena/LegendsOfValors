@@ -18,6 +18,8 @@ public abstract class LivingEntity {
         this.hp = level * 100;
     }
 
+    public LivingEntity() {}
+
     public String getName() { return name; }
     public int getLevel() { return level; }
     public double getHp() { return hp; }
