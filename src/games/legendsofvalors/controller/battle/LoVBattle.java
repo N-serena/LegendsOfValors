@@ -18,9 +18,6 @@ import core.model.item.spell.Spell;
 import core.model.item.Weapon;
 import games.legendsofvalors.model.world.LovBoard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -173,26 +170,26 @@ public class LoVBattle extends BattleController implements Battle {
 //        return null;
 //    }
 
-    /**
-     * To get the heroes in range for the monster to attack
-     * @return ValorHero the selected target
-     */
-    public ValorHero selectHeroTarget()
-    {
-        Random rand = new Random();
-
-        List<ValorHero> heroes = new ArrayList<>(board.getHeroesInRange((ValorMonster) attacker, 4));
-
-        //only one monster
-        if (heroes.size() == 1)
-        {
-            return heroes.get(0);
-        }
-        else {
-            int index = rand.nextInt(heroes.size());
-            return heroes.get(index);
-        }
-    }
+//    /**
+//     * To get the heroes in range for the monster to attack
+//     * @return ValorHero the selected target
+//     */
+//    public ValorHero selectHeroTarget()
+//    {
+//        Random rand = new Random();
+//
+//        List<ValorHero> heroes = new ArrayList<>(board.getHeroesInRange((ValorMonster) attacker, 4));
+//
+//        //only one monster
+//        if (heroes.size() == 1)
+//        {
+//            return heroes.get(0);
+//        }
+//        else {
+//            int index = rand.nextInt(heroes.size());
+//            return heroes.get(index);
+//        }
+//    }
 
     public void printAction(String action)
     {

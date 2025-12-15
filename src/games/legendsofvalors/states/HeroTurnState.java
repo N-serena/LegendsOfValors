@@ -116,21 +116,21 @@ public class HeroTurnState implements LovGameState {
     private ValorMonster findTarget(LovBoard board, ValorHero hero) {
         LovBoard.Position hPos = board.getHeroPosition(hero);
 
-        //List<ValorMonster> potentialTargets = new ArrayList<>(board.getMonstersInRange(hero, 1));
-        List<ValorMonster> potentialTargets = new ArrayList<>();
+        List<ValorMonster> potentialTargets = new ArrayList<>(board.getMonstersInRange(hero, 1));
+        //List<ValorMonster> potentialTargets = new ArrayList<>();
 
 
         // Iterate through ACTIVE monsters on the board, not the database templates
-        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
-            LovBoard.Position mPos = entry.getValue();
-
-            // Check for adjacency (3x3 grid around hero)
-            // Logic: Row difference <= 1 AND Col difference <= 1
-            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
-                //return entry.getKey(); // Found a target!
-                potentialTargets.add(entry.getKey());
-            }
-        }
+//        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
+//            LovBoard.Position mPos = entry.getValue();
+//
+//            // Check for adjacency (3x3 grid around hero)
+//            // Logic: Row difference <= 1 AND Col difference <= 1
+//            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
+//                //return entry.getKey(); // Found a target!
+//                potentialTargets.add(entry.getKey());
+//            }
+//        }
 
         if (potentialTargets.size() == 0)
         {
@@ -336,6 +336,7 @@ public class HeroTurnState implements LovGameState {
         }
         return new TeleportCommand(board, currentHero, finalDest.row, finalDest.col);
     }
+
     private LovCommand handleAttackInput(LovBoard board, ValorHero hero, LovGameController context) {
         ValorMonster target = findTarget(board, hero);
         if (target != null) {
@@ -345,6 +346,7 @@ public class HeroTurnState implements LovGameState {
             return null;
         }
     }
+
     private LovCommand handleSpellInput(LovBoard board, ValorHero hero, LovGameController context) {
         // Reuse your existing targeting logic
         ValorMonster target = findTarget(board, hero);
@@ -357,6 +359,7 @@ public class HeroTurnState implements LovGameState {
             return null;
         }
     }
+
     private void handleMarketInput(Scanner scanner, LovBoard board, ValorHero hero, LovGameController context) {
         LovBoard.Position currentPos = board.getHeroPosition(hero);
 
@@ -385,6 +388,7 @@ public class HeroTurnState implements LovGameState {
             System.out.println("You must be at the Nexus to shop!");
         }
     }
+
     private void handleEquipInput(ValorHero hero, LovGameController context) {
         Scanner scanner = context.getScanner();
         System.out.println("\n--- INVENTORY ACTION ---");
@@ -405,6 +409,7 @@ public class HeroTurnState implements LovGameState {
             scanner.next(); // Clear invalid input
         }
     }
+
     private void handleInfoInput(ValorHero hero) {
         System.out.println("\nStats for " + hero.getName());
         System.out.println("HP: " + hero.getHp() + " | Mana: " + hero.getMana());

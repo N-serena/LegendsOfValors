@@ -327,7 +327,7 @@ public class LovBoard implements Board {
         int attackRange = Math.max(0, range);
         Set<ValorHero> heroes = new LinkedHashSet<>();
         for (Map.Entry<ValorHero, Position> entry : heroPositions.entrySet()) {
-            if (manhattanDistance(monsterPosition, entry.getValue()) <= attackRange) {
+            if (Math.abs(monsterPosition.row - entry.getValue().row) <= attackRange && Math.abs(monsterPosition.col - entry.getValue().col) <= attackRange) {
                 heroes.add(entry.getKey());
             }
         }
@@ -343,7 +343,7 @@ public class LovBoard implements Board {
         int attackRange = Math.max(0, range);
         Set<ValorMonster> monsters = new LinkedHashSet<>();
         for (Map.Entry<ValorMonster, Position> entry : monsterPositions.entrySet()) {
-            if (manhattanDistance(heroPosition, entry.getValue()) <= attackRange) {
+            if (Math.abs(heroPosition.row - entry.getValue().row) <= attackRange && Math.abs(heroPosition.col - entry.getValue().col) <= attackRange) {
                 monsters.add(entry.getKey());
             }
         }

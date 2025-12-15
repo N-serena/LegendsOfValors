@@ -28,6 +28,7 @@ public class MonsterTurnState implements LovGameState {
         // 1. ATTACK PHASE
         Map<ValorMonster, Set<ValorHero>> attackers = board.getMonstersReadyToAttack(1);
 
+
         if (attackers.isEmpty()) {
             System.out.println("None of the monsters are in range to attack.");
         } else {
