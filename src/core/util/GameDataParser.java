@@ -9,10 +9,15 @@ import core.model.item.spell.Spell;
 import games.legendsofvalors.model.ValorHero;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 /**
  * Utility class for parsing game data from text files.
@@ -24,7 +29,7 @@ public class GameDataParser {
     // --- PARSE ITEMS ---
     public static List<Item> parseWeapons(String filePath) throws IOException {
         List<Item> items = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = newReader(filePath);
         String line = reader.readLine(); // Skip Header
 
         while ((line = reader.readLine()) != null) {
@@ -47,7 +52,7 @@ public class GameDataParser {
 
     public static List<Item> parseArmor(String filePath) throws IOException {
         List<Item> items = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = newReader(filePath);
         String line = reader.readLine();
 
         while ((line = reader.readLine()) != null) {
@@ -65,7 +70,7 @@ public class GameDataParser {
 
     public static List<Item> parsePotions(String filePath) throws IOException {
         List<Item> items = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = newReader(filePath);
         String line = reader.readLine();
 
         while ((line = reader.readLine()) != null) {
@@ -85,7 +90,7 @@ public class GameDataParser {
 
     public static List<Item> parseSpells(String filePath, Spell.SpellType type) throws IOException {
         List<Item> items = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = newReader(filePath);
         String line = reader.readLine();
 
         while ((line = reader.readLine()) != null) {
@@ -118,7 +123,7 @@ public class GameDataParser {
 
     public static List<Hero> parseHeroes(String filePath, String type) throws IOException {
         List<Hero> heroes = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = newReader(filePath);
         String line = reader.readLine();
 
         while ((line = reader.readLine()) != null) {
@@ -145,7 +150,7 @@ public class GameDataParser {
 
     public static List<Monster> parseMonsters(String filePath, String type) throws IOException {
         List<Monster> monsters = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        BufferedReader reader = newReader(filePath);
         String line = reader.readLine();
 
         while ((line = reader.readLine()) != null) {
@@ -166,5 +171,54 @@ public class GameDataParser {
         }
         reader.close();
         return monsters;
+    }
+    // Resolve data file paths even when the JVM launches from a higher-level directory.
+    private static BufferedReader newReader(String filePath) throws IOException {
+        Path resolved = resolveDataFile(filePath);
+        return new BufferedReader(new FileReader(resolved.toFile()));
+    }
+
+    private static Path resolveDataFile(String filePath) throws IOException {
+        Path candidate = Paths.get(filePath);
+        if (Files.exists(candidate)) {
+            return candidate;
+        }
+
+        Path cwd = Paths.get(System.getProperty("user.dir"));
+        candidate = cwd.resolve(filePath);
+        if (Files.exists(candidate)) {
+            return candidate;
+        }
+
+        Path dataDir = locateDataDirectory(cwd);
+        if (dataDir != null) {
+            Path relative = Paths.get(filePath);
+            if (relative.getNameCount() > 1 && "data_files".equals(relative.getName(0).toString())) {
+                Path resolved = dataDir.resolve(relative.subpath(1, relative.getNameCount()));
+                if (Files.exists(resolved)) {
+                    return resolved;
+                }
+            }
+
+            Path resolved = dataDir.resolve(relative.getFileName());
+            if (Files.exists(resolved)) {
+                return resolved;
+            }
+        }
+
+        throw new FileNotFoundException("Unable to locate data file: " + filePath);
+    }
+
+    private static Path locateDataDirectory(Path startDir) throws IOException {
+        Path candidate = startDir.resolve("data_files");
+        if (Files.isDirectory(candidate)) {
+            return candidate;
+        }
+
+        try (Stream<Path> stream = Files.walk(startDir, 3)) {
+            return stream.filter(p -> Files.isDirectory(p) && "data_files".equals(p.getFileName().toString()))
+                    .findFirst()
+                    .orElse(null);
+        }
     }
 }
