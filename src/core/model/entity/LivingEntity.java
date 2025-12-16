@@ -18,6 +18,8 @@ public abstract class LivingEntity {
         this.hp = level * 100;
     }
 
+    public LivingEntity() {}
+
     public String getName() { return name; }
     public int getLevel() { return level; }
     public double getHp() { return hp; }
@@ -34,5 +36,13 @@ public abstract class LivingEntity {
     public void takeDamage(double amount) {
         this.hp -= amount;
         if (this.hp < 0) this.hp = 0;
+    }
+
+    /**
+     * Returns the current health as a percentage of maximum health
+     */
+    public double getHealthPercentage() {
+        double maxHp = level * 100.0;
+        return Math.max(0.0, Math.min(1.0, hp / maxHp));
     }
 }

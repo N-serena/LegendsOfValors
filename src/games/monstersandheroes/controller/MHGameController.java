@@ -1,21 +1,19 @@
-package games.monstersandheroes.contoller;
+package games.monstersandheroes.controller;
 
 import core.interfaces.GameEngine;
 import core.model.Party;
 import core.model.entity.Hero;
-import core.model.entity.Monster;
 import core.model.item.Item;
 import core.model.world.MarketTile;
 import core.util.GameConfig;
-import core.util.GameDataParser;
-import core.util.SoundPlayer;
+import games.commoncontrollers.*;
+
 import games.monstersandheroes.view.GameView;
 import games.monstersandheroes.model.Board;
 import core.model.world.Tile;
 import core.util.Colors;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -26,16 +24,10 @@ import java.util.Scanner;
  * * @author Serena N.
  * @version 3.0 (Refactored)
  */
-public class MHGameController implements GameEngine {
+public class MHGameController extends GameController implements GameEngine {
     private Scanner scanner;
-    private Party party;
     private Board board;
     private GameView view;
-
-    // Data Pools
-    private List<Hero> allHeroes;
-    private List<Item> allItems;
-    private List<Monster> allMonsters;
 
     // Sub-Controllers
     private MarketController marketController;
@@ -60,11 +52,7 @@ public class MHGameController implements GameEngine {
 
     @Override
     public void startGame() {
-        //0. Start audio (optional)
-        SoundPlayer.playBackgroundMusic("theme.wav");
-
         // 1. Visuals
-        view.printTitleScreen();
         view.printIntroStory();
         view.printRules();
         System.out.println("\nPress ENTER to begin your adventure...");
@@ -85,51 +73,6 @@ public class MHGameController implements GameEngine {
         // 3. Setup
         selectParty();
         gameLoop();
-    }
-
-    private void loadGameData() throws IOException {
-        System.out.println("Loading game assets...");
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Warriors.txt", "Warrior"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Sorcerers.txt", "Sorcerer"));
-        allHeroes.addAll(GameDataParser.parseHeroes("data_files/Paladins.txt", "Paladin"));
-
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Dragons.txt", "Dragon"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Exoskeletons.txt", "Exoskeleton"));
-        allMonsters.addAll(GameDataParser.parseMonsters("data_files/Spirits.txt", "Spirit"));
-
-        allItems.addAll(GameDataParser.parseWeapons("data_files/Weaponry.txt"));
-        allItems.addAll(GameDataParser.parseArmor("data_files/Armory.txt"));
-        allItems.addAll(GameDataParser.parsePotions("data_files/Potions.txt"));
-        allItems.addAll(GameDataParser.parseSpells("data_files/IceSpells.txt", core.model.item.Spell.SpellType.ICE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/FireSpells.txt", core.model.item.Spell.SpellType.FIRE));
-        allItems.addAll(GameDataParser.parseSpells("data_files/LightningSpells.txt", core.model.item.Spell.SpellType.LIGHTNING));
-    }
-
-    private void selectParty() {
-        System.out.println("\n--- HERO SELECTION ---");
-        int count = 0;
-        while (count < 1 || count > 3) {
-            System.out.print("Enter party size (1-3): ");
-            if (scanner.hasNextInt()) count = scanner.nextInt();
-            else scanner.next();
-        }
-
-        // Display Options
-        System.out.printf("%-4s %-20s %-10s\n", "ID", "Name", "Type");
-        for (int i = 0; i < allHeroes.size(); i++) {
-            System.out.printf("%-4d %-20s %-10s\n", (i+1), allHeroes.get(i).getName(), allHeroes.get(i).getClass().getSimpleName());
-        }
-
-        for (int i = 1; i <= count; i++) {
-            int choice = -1;
-            while (choice < 1 || choice > allHeroes.size()) {
-                System.out.print("Select Hero " + i + ": ");
-                if (scanner.hasNextInt()) choice = scanner.nextInt();
-                else scanner.next();
-            }
-            party.addHero(allHeroes.get(choice - 1));
-        }
-        System.out.println("Party assembled!");
     }
 
     private void gameLoop() {
@@ -223,19 +166,19 @@ public class MHGameController implements GameEngine {
             double armorDef = (h.getEquippedArmor() != null) ? h.getEquippedArmor().getDamageReduction() : 0;
 
             // Calculate Total Damage (Strength + Weapon) using the Hero's logic method
-            double totalDmg = heroController.calculateDamage(h);
+            //double totalDmg = heroController.calculateDamage(h);
 
             // Calculate Dodge %
             double dodgeChance = heroController.calculateDodgeChance(h) * 100;
 
-            System.out.printf("     Damage:  %-5.0f (Str + Weapon)\n", totalDmg);
+            //System.out.printf("     Damage:  %-5.0f (Str + Weapon)\n", totalDmg);
             System.out.printf("     Defense: %-5.0f (Armor)\n", armorDef);
             System.out.printf("     Dodge:   %-5.0f%%\n", dodgeChance);
 
             // Gear
             System.out.println("    Equipped Gear");
             if (h.getEquippedWeapon() != null) {
-                System.out.printf("     Weapon: %s (Val: %.0f)\n", h.getEquippedWeapon().getName(), h.getEquippedWeapon().getDamage());
+                //System.out.printf("     Weapon: %s (Val: %.0f)\n", h.getEquippedWeapon().getName(), h.getEquippedWeapon().getDamage());
             } else {
                 System.out.println("     Weapon: None");
             }
@@ -300,7 +243,7 @@ public class MHGameController implements GameEngine {
                 findRandomLoot();
             } else if (roll < GameConfig.CHANCE_BATTLE) {
                 // Pass scanner to battle controller to reuse input stream
-                BattleController battle = new BattleController(this.scanner, this.inventoryController, this.heroController);
+                MonstersAndHeroesBattleController battle = new MonstersAndHeroesBattleController(this.inventoryController, this.heroController);
                 battle.startBattle(party, allMonsters);
             }
         }

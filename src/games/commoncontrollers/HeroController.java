@@ -1,6 +1,8 @@
-package games.monstersandheroes.contoller;
+package games.commoncontrollers;
 
 import core.model.entity.Hero;
+import core.model.item.Weapon;
+import core.model.item.spell.Spell;
 import core.util.Colors;
 import core.util.GameConfig;
 
@@ -37,8 +39,8 @@ public class HeroController {
      * Calculates attack damage based on Hero Stats + Gear.
      * Formula: (Strength + WeaponDmg) * 0.05
      */
-    public double calculateDamage(Hero hero) {
-        double weaponDamage = (hero.getEquippedWeapon() != null) ? hero.getEquippedWeapon().getDamage() : 0;
+    public double calculateDamage(Hero hero, Weapon weapon) {
+        double weaponDamage = (weapon != null) ? weapon.getDamage() : 0;
         return (hero.getStrength() + weaponDamage) * GameConfig.DAMAGE_SCALE;
     }
 
@@ -56,7 +58,7 @@ public class HeroController {
      * Calculates spell damage based on Hero Dexterity + Spell Base Dmg.
      * Formula: Base + (Dex/10000 * Base)
      */
-    public double calculateSpellDamage(Hero hero, core.model.item.Spell spell) {
+    public double calculateSpellDamage(Hero hero, Spell spell) {
         return spell.getDamage() + (hero.getDexterity() / 10000.0) * spell.getDamage();
     }
 }

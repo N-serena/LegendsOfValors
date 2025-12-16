@@ -6,23 +6,26 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.File;
 
-/**
- * Utility to play background music safely.
- * Runs in a separate thread to avoid blocking the game loop.
- * * Fails silently if audio file is missing or errors occur, ensuring game stability.
- * * @author Serena N.
- * @version 1.0
- */
 public class SoundPlayer {
 
     private static Clip clip;
+    private static boolean soundEnabled = true;
 
     public static void playBackgroundMusic(String filePath) {
+        if (!soundEnabled) {
+            return; // Return immediately if audio is disabled
+        }
+        
         new Thread(() -> {
             try {
                 File audioFile = new File(filePath);
+
+                // 1. Debug: Print the path being searched
+                //System.out.println("[Sound] Looking for file at: " + audioFile.getAbsolutePath());
+
                 if (!audioFile.exists()) {
-                    // Fail silently so the game doesn't crash on the professor's computer
+                    System.err.println("[Sound] Warning: Audio file not found. Sound disabled.");
+                    soundEnabled = false;
                     return;
                 }
 
@@ -30,15 +33,16 @@ public class SoundPlayer {
                 clip = AudioSystem.getClip();
                 clip.open(audioStream);
 
-                // Optional: Lower volume by 10 decibels so it's background, not foreground
+                // Lower volume
                 FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                 gainControl.setValue(-10.0f);
 
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
                 clip.start();
-
             } catch (Exception e) {
-                // Ignore audio errors (Game must continue even if sound fails)
+                // disable sound on exception
+                System.err.println("[Sound] Warning: Audio system not supported in this environment. Sound disabled.");
+                soundEnabled = false;
             }
         }).start();
     }

@@ -1,10 +1,8 @@
-package games.monstersandheroes.contoller;
+package games.commoncontrollers;
 
 import core.model.entity.Hero;
-import core.model.item.Armor;
-import core.model.item.Item;
-import core.model.item.Potion;
-import core.model.item.Weapon;
+import core.model.item.*;
+import core.model.item.spell.Spell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +16,13 @@ import java.util.Scanner;
  */
 public class InventoryController {
     private Scanner scanner;
+    public List<Spell> spells;
+    public List<Weapon> weapons;
 
     public InventoryController(Scanner scanner) {
         this.scanner = scanner;
+        this.spells = new ArrayList<>();
+        this.weapons = new ArrayList<>();
     }
 
     /**
@@ -65,8 +67,15 @@ public class InventoryController {
      */
     public void equipItem(Hero hero, Item item) {
         if (item instanceof Weapon) {
-            hero.setEquippedWeapon((Weapon) item);
-            System.out.println("Equipped Weapon: " + item.getName());
+            if (hero.getHandsInUse() == 2 || hero.getHandsInUse() + ((Weapon) item).getRequiredHands() > 2) {
+
+                System.out.println("Cannot equip any more weapons!");
+            }
+            else {
+                hero.setEquippedWeapon((Weapon) item);
+                hero.setHandsInUse(((Weapon) item).getRequiredHands());
+                System.out.println("Equipped Weapon: " + item.getName());
+            }
         } else if (item instanceof Armor) {
             hero.setEquippedArmor((Armor) item);
             System.out.println("Equipped Armor: " + item.getName());
@@ -107,6 +116,60 @@ public class InventoryController {
         }
         return false;
     }
+
+    public boolean openSpellsMenu(Hero hero)
+    {
+        spells.clear();
+
+        for (Item i : hero.getInventory()) if (i instanceof Spell) spells.add((Spell) i);
+
+        if (spells.isEmpty()) { System.out.println("No spells."); return false; }
+
+        for (int i = 0; i < spells.size(); i++) {
+            System.out.printf("%d. %s (Mana: %.0f)\n", (i+1), spells.get(i).getName(), spells.get(i).getManaCost());
+        }
+
+        return true;
+    }
+
+    public boolean checkForSpells(Hero hero)
+    {
+        spells.clear();
+
+        for (Item i : hero.getInventory()) if (i instanceof Spell) spells.add((Spell) i);
+
+        if (spells.isEmpty()) { System.out.println("No spells."); return false; }
+
+        return true;
+    }
+
+    public boolean openEquippedWeaponsMenu(Hero hero)
+    {
+        weapons.clear();
+
+        for (Item i : hero.getEquippedWeapon()) if (i instanceof Weapon) weapons.add((Weapon) i);
+
+        if (weapons.isEmpty()) { System.out.println("No Weapons."); return false; }
+
+        for (int i = 0; i < weapons.size(); i++) {
+            System.out.printf("%d. %s (Damage: %.0f)\n", (i+1), weapons.get(i).getName(), weapons.get(i).getDamage());
+        }
+
+        return true;
+    }
+
+    public boolean checkForEquippedWeapons(Hero hero)
+    {
+        weapons.clear();
+
+        for (Item i : hero.getEquippedWeapon()) if (i instanceof Weapon) weapons.add((Weapon) i);
+
+        if (weapons.isEmpty()) { System.out.println("No Weapons."); return false; }
+
+        return true;
+    }
+
+
 
     /**
      * Safe removal of items (Selling/Dropping).
