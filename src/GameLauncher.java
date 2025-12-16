@@ -4,6 +4,12 @@ import games.commoncontrollers.InputHandler;
 import games.legendsofvalors.controller.LovGameController;
 import games.monstersandheroes.controller.MHGameController;
 
+/**
+ * The main launcher class for the SWEN-RPG System Collection.
+ * It allows users to select and launch different games within the collection.
+ * @version 1.0
+ * @author Serena N
+ */
 public class GameLauncher {
 
     public void launch() {
