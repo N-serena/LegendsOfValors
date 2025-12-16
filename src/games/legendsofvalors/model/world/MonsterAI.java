@@ -67,7 +67,8 @@ public class MonsterAI {
             return MovementDecision.stay("Monster position unknown");
         }
 
-        Map<ValorHero, LovBoard.Position> heroPositions = board.getHeroPositions();
+        LovBoard.Lane monsterLane = board.getLaneForColumn(monsterPos.col);
+        Map<ValorHero, LovBoard.Position> heroPositions = getHeroesInLane(monsterLane);
 
         if (heroPositions.isEmpty()) {
             if (isAdvanceAvailable(monsterPos)) {
@@ -79,7 +80,7 @@ public class MonsterAI {
 
         Set<ValorHero> heroesInRange = board.getHeroesInRange(monster, 1);
         if (!heroesInRange.isEmpty()) {
-            if (shouldRetreat(monster, heroesInRange)) {
+            if (shouldRetreat(monster, heroesInRange, heroPositions)) {
                 if (isRetreatAvailable(monsterPos)) {
                     LovBoard.Position retreatPos = new LovBoard.Position(monsterPos.row - 1, monsterPos.col);
                     return MovementDecision.retreat("Overwhelmed in melee, falling back", retreatPos);
@@ -98,7 +99,7 @@ public class MonsterAI {
         }
 
         Set<ValorHero> nearbyHeroes = board.getHeroesInRange(monster, 2);
-        if (!nearbyHeroes.isEmpty() && shouldEvadeHeroRange(monster, nearbyHeroes, monsterPos)) {
+        if (!nearbyHeroes.isEmpty() && shouldEvadeHeroRange(monster, nearbyHeroes, monsterPos, heroPositions)) {
             Optional<LovBoard.Position> escape = findBestEvadeSpot(monster, monsterPos, heroPositions);
             if (escape.isPresent()) {
                 return MovementDecision.evade("Seeking safer distance", escape.get());
@@ -150,7 +151,8 @@ public class MonsterAI {
      *   - Total hero threat exceeds 2x monster defense
      * return true if monster should retreat, false otherwise
      */
-    private boolean shouldRetreat(ValorMonster monster, Set<ValorHero> nearbyHeroes) {
+    private boolean shouldRetreat(ValorMonster monster, Set<ValorHero> nearbyHeroes,
+                                  Map<ValorHero, LovBoard.Position> laneHeroPositions) {
         LovBoard.Position position = board.getMonsterPosition(monster);
 
         // Consider retreat when HP below 20%
@@ -172,7 +174,7 @@ public class MonsterAI {
         }
 
         if (position != null) {
-            double risk = evaluatePositionRisk(monster, position, board.getHeroPositions());
+            double risk = evaluatePositionRisk(monster, position, laneHeroPositions);
             if (risk > FORCED_RETREAT_RISK_THRESHOLD) {
                 return true;
             }
@@ -188,13 +190,14 @@ public class MonsterAI {
      *   - Retreating would place monster beyond 1-tile range of all heroes
      * return true if evasion is recommended, false otherwise
      */
-    private boolean shouldEvadeHeroRange(ValorMonster monster, Set<ValorHero> nearbyHeroes, LovBoard.Position currentPos) {
+    private boolean shouldEvadeHeroRange(ValorMonster monster, Set<ValorHero> nearbyHeroes,
+                                         LovBoard.Position currentPos,
+                                         Map<ValorHero, LovBoard.Position> laneHeroPositions) {
         if (monster.getHealthPercentage() > 0.6 || nearbyHeroes.isEmpty()) {
             return false;
         }
 
-        Map<ValorHero, LovBoard.Position> heroPositions = board.getHeroPositions();
-        double currentRisk = evaluatePositionRisk(monster, currentPos, heroPositions);
+        double currentRisk = evaluatePositionRisk(monster, currentPos, laneHeroPositions);
 
         List<LovBoard.Position> escapeCandidates = new ArrayList<>();
         if (isRetreatAvailable(currentPos)) {
@@ -203,7 +206,7 @@ public class MonsterAI {
         escapeCandidates.addAll(getLateralPositions(currentPos));
 
         for (LovBoard.Position candidate : escapeCandidates) {
-            double candidateRisk = evaluatePositionRisk(monster, candidate, heroPositions);
+            double candidateRisk = evaluatePositionRisk(monster, candidate, laneHeroPositions);
             if (candidateRisk + 0.2 < currentRisk) {
                 return true;
             }
@@ -500,7 +503,7 @@ public class MonsterAI {
      * Check if a tile at the specified position is traversable for monsters
      * Validates:
      *   - Position is within board bounds
-     *   - Tile is accessible and not a hero nexus
+    *   - Tile is accessible
      *   - Cell is not occupied by another hero or monster
      * return true if the tile can be traversed, false otherwise
      */
@@ -510,7 +513,7 @@ public class MonsterAI {
         }
 
         LovTile tile = board.getTile(row, col);
-        if (!tile.isAccessible() || tile.isHeroNexus()) {
+        if (!tile.isAccessible()) {
             return false;
         }
 
@@ -583,6 +586,34 @@ public class MonsterAI {
         double normalized = combinedThreat / defense;
         double healthModifier = 1.0 + (1.0 - monster.getHealthPercentage());
         return normalized * healthModifier;
+    }
+
+    private Map<ValorHero, LovBoard.Position> getHeroesInLane(LovBoard.Lane lane) {
+        if (lane == null) {
+            return Collections.emptyMap();
+        }
+
+        int[] laneColumns = lane.getColumns();
+        Map<ValorHero, LovBoard.Position> filtered = new LinkedHashMap<>();
+        for (Map.Entry<ValorHero, LovBoard.Position> entry : board.getHeroPositions().entrySet()) {
+            LovBoard.Position position = entry.getValue();
+            if (position == null) {
+                continue;
+            }
+            if (containsColumn(laneColumns, position.col)) {
+                filtered.put(entry.getKey(), position);
+            }
+        }
+        return filtered;
+    }
+
+    private boolean containsColumn(int[] columns, int column) {
+        for (int value : columns) {
+            if (value == column) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

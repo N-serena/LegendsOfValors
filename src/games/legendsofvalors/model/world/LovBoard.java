@@ -324,10 +324,22 @@ public class LovBoard implements Board {
         if (monsterPosition == null) {
             return Collections.emptySet();
         }
+        Lane monsterLane = getLaneForColumn(monsterPosition.col);
+        if (monsterLane == null) {
+            return Collections.emptySet();
+        }
         int attackRange = Math.max(0, range);
         Set<ValorHero> heroes = new LinkedHashSet<>();
         for (Map.Entry<ValorHero, Position> entry : heroPositions.entrySet()) {
-            if (Math.abs(monsterPosition.row - entry.getValue().row) <= attackRange && Math.abs(monsterPosition.col - entry.getValue().col) <= attackRange) {
+            Position heroPosition = entry.getValue();
+            if (heroPosition == null) {
+                continue;
+            }
+            if (!monsterLane.contains(heroPosition.col)) {
+                continue;
+            }
+            if (Math.abs(monsterPosition.row - heroPosition.row) <= attackRange
+                    && Math.abs(monsterPosition.col - heroPosition.col) <= attackRange) {
                 heroes.add(entry.getKey());
             }
         }
@@ -498,7 +510,7 @@ public class LovBoard implements Board {
             return false;
         }
         LovTile tile = tiles[row][col];
-        return tile.isAccessible() && !tile.isHeroNexus();
+        return tile.isAccessible();
     }
 
     // Applies terrain-specific buffs to the hero standing on the given tile.
@@ -648,7 +660,7 @@ public class LovBoard implements Board {
      * Validates:
      *   - Monster exists on board
      *   - Target position is in bounds
-     *   - Target tile is accessible and not hero nexus
+    *   - Target tile is accessible
      *   - Target cell is unoccupied
      * Clears obstacles at target position if present
      * return true if move succeeded, false if blocked or invalid
@@ -663,7 +675,7 @@ public class LovBoard implements Board {
         }
 
         LovTile targetTile = tiles[targetRow][targetCol];
-        if (!targetTile.isAccessible() || targetTile.isHeroNexus()) {
+        if (!targetTile.isAccessible()) {
             return false;
         }
 
