@@ -117,20 +117,6 @@ public class HeroTurnState implements LovGameState {
         LovBoard.Position hPos = board.getHeroPosition(hero);
 
         List<ValorMonster> potentialTargets = new ArrayList<>(board.getMonstersInRange(hero, 1));
-        //List<ValorMonster> potentialTargets = new ArrayList<>();
-
-
-        // Iterate through ACTIVE monsters on the board, not the database templates
-//        for (java.util.Map.Entry<ValorMonster, LovBoard.Position> entry : board.getMonsterPositions().entrySet()) {
-//            LovBoard.Position mPos = entry.getValue();
-//
-//            // Check for adjacency (3x3 grid around hero)
-//            // Logic: Row difference <= 1 AND Col difference <= 1
-//            if (Math.abs(hPos.row - mPos.row) <= 1 && Math.abs(hPos.col - mPos.col) <= 1) {
-//                //return entry.getKey(); // Found a target!
-//                potentialTargets.add(entry.getKey());
-//            }
-//        }
 
         if (potentialTargets.size() == 0)
         {
