@@ -2,13 +2,12 @@ package games.legendsofvalors.model;
 
 import core.interfaces.HeroObserver;
 import core.model.entity.Hero;
-import core.model.entity.decorator.HeroDecorator;
 import core.util.Colors;
 
 /**
- * a hero class used for Legends of Valor, extends HeroDecorator
+ * a hero class used for Legends of Valor, extends Hero
  */
-public class ValorHero extends HeroDecorator implements HeroObserver {
+public class ValorHero extends Hero implements HeroObserver {
 
     // LOV Specific Attributes
     private int nexusRow;
@@ -17,18 +16,13 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
     private int currentRow;
     private int currentCol;
 
-    public ValorHero(Hero hero) {
-        super(hero);
+    public ValorHero(String name, double mana, double str, double agi, double dex, double money, double xp) {
+        super(name, mana, str, agi, dex, money, xp);
+        // Default values
         this.nexusRow = -1;
         this.nexusCol = -1;
         this.lane = "Unassigned";
     }
-
-    public Hero getHero()
-    {
-        return this.hero;
-    }
-
 
     // --- RESPAWN & RECALL ---
     public void setHomeNexus(int row, int col, String lane) {
@@ -45,23 +39,23 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
         if (nexusRow != -1 && nexusCol != -1) {
             // NOTE: We will need to talk to the Board to move visually,
             // but for now, we reset the internal state.
-            setHp(this.hero.getLevel()*100);// Reset HP to Max (Example Formula)
-            setMana(this.hero.getLevel() * 100); // Reset Mana to Max
+            setHp(this.level*100);// Reset HP to Max (Example Formula)
+            setMana(this.level * 100); // Reset Mana to Max
         }
     }
 
     /**
      * A hero gets a reward when that hero or another hero in the party has defeated a monster
      */
-
+    @Override
     public void getReward(int level)
     {
-        this.hero.addGold(level * 500);
-        System.out.println(this.hero.getName() + " gained " + (level * 500) + " gold!");
-        this.hero.addExperience(level * 2);
-        System.out.println(this.hero.getName() + " gained " + level * 2 + " EXP!");
+        this.gold += level * 500;
+        System.out.println(name + " gained " + (level * 500) + " gold!");
+        this.experience += level * 2;
+        System.out.println(name + " gained " + level*2 + " EXP!");
         System.out.println();
-        if (this.hero.getExperience() >= this.hero.getLevel() * 10)
+        if (this.experience >= this.level * 10)
         {
             levelUp();
         }
@@ -69,9 +63,9 @@ public class ValorHero extends HeroDecorator implements HeroObserver {
 
     @Override
     public void levelUp() {
-        super.levelUp();
-        System.out.println(Colors.GREEN + this.name + " has leveled up to " + this.hero.getLevel() + " in Legends of Valors!" + Colors.RESET);
+        applyStandardLevelUp();
         System.out.println();
+        System.out.println(Colors.GREEN + this.name + " has leveled up to " + this.level + " in Legends of Valors!" + Colors.RESET);
     }
 
     @Override

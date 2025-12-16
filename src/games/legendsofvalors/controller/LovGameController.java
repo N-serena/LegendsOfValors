@@ -94,8 +94,16 @@ public class LovGameController extends GameController implements GameEngine {
             System.out.println("\nSelect Hero #" + i + " (" + getLaneName(getColForHeroIndex(i-1)) + " Lane):");
             Hero selected = selectHero(allHeroes);
 
-            Hero valorHero = new ValorHero(selected);
-            party.addHero(valorHero);
+            if (selected instanceof ValorHero) {
+                party.addHero(selected);
+            } else {
+                // If it's a base Hero, we might need to wrap it or just cast it
+                // Ideally, your Factory or DB should give ValorHeroes, but for now we cast/copy:
+                ValorHero vh = new ValorHero(selected.getName(), selected.getMana(),
+                        selected.getStrength(), selected.getAgility(),
+                        selected.getDexterity(), selected.getGold(), selected.getExperience());
+                party.addHero(vh);
+            }
         }
 
         getComplimentaryWeapons();
