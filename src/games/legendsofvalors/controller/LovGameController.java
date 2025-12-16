@@ -109,7 +109,6 @@ public class LovGameController extends GameController implements GameEngine {
         getComplimentaryWeapons();
 
         // 3. Place Heroes on Board
-        // Indices 0, 1, 2 correspond to Top, Mid, Bot
         int[][] slots = {{7, 0}, {7, 3}, {7, 6}};
 
         for (int i = 0; i < party.getSize(); i++) {
