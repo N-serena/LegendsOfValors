@@ -1,9 +1,8 @@
 package core.model.entity.decorator;
 
 import core.model.entity.Hero;
-import core.model.item.Item;
 
-import java.util.List;
+import static java.lang.Math.ceil;
 
 /**
  * A hero decorator class that acts as a base for
@@ -36,6 +35,13 @@ public abstract class HeroDecorator extends Hero {
     }
 
     @Override
+    public double getHp()
+    {
+        return this.hero.getHp();
+    }
+
+
+    @Override
     public double getMana()
     {
         return this.hero.getMana();
@@ -45,5 +51,11 @@ public abstract class HeroDecorator extends Hero {
     public String getName()
     {
         return this.hero.getName();
+    }
+
+    @Override
+    public String toString()
+    {
+        return name + " | HP: " + ceil(this.hero.getHp()) + " | Level: " + this.hero.getLevel();
     }
 }

@@ -209,7 +209,7 @@ public class LovGameController extends GameController implements GameEngine {
         System.out.println("The heroes have " + status + " the game against the monsters.");
         System.out.println(" + NUMBER OF ROUNDS PLAYED: " + roundNumber);
         System.out.println("Hero Stats: ");
-        for(Hero h : getHeroes())
+        for(ValorHero h : getHeroes())
         {
             System.out.println(h);
         }
